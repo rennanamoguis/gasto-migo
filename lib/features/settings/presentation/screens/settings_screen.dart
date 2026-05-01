@@ -5,9 +5,34 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/presentation/screens/get_started_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../core/database/repository_debug.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  Future<void> insertSampleTransaction(BuildContext context) async {
+    try {
+      await RepositoryDebug.insertSampleTransaction();
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sample transaction inserted.'),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
+      );
+    }
+  }
 
   Future<void> resetAppLogin(BuildContext context) async {
     final storage = SecureStorageService();
@@ -85,6 +110,13 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.access_time_rounded,
                   title: 'Time Format',
                   trailingText: '12-hour',
+                ),
+                Divider(),
+                _SettingsTile(
+                  icon: Icons.bug_report_rounded,
+                  title: 'Insert Sample Transaction',
+                  trailingText: 'Debug',
+                  onTap: () => insertSampleTransaction(context),
                 ),
               ],
             ),

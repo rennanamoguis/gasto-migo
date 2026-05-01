@@ -16,13 +16,6 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int selectedIndex = 0;
 
-  final List<Widget> screens = const [
-    HomeScreen(),
-    TransactionsScreen(),
-    AddTransactionScreen(),
-    SettingsScreen(),
-  ];
-
   void onTabSelected(int index) {
     setState(() {
       selectedIndex = index;
@@ -31,6 +24,18 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final screens = [
+      HomeScreen(
+        onViewAllTransactions: () => onTabSelected(1),
+        onAddTransaction: () => onTabSelected(2),
+      ),
+      TransactionsScreen(
+        onAddTransaction: () => onTabSelected(2),
+      ),
+      const AddTransactionScreen(),
+      const SettingsScreen(),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: selectedIndex,
