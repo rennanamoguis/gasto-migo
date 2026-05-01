@@ -54,6 +54,8 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
         salt: salt,
       );
 
+      await authRepository.completePinEnrollmentOnServer();
+
       await storage.saveUser(
         firebaseUid: widget.firebaseUid,
         fullName: widget.fullName,
@@ -64,13 +66,6 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
         pinHash: hash,
         pinSalt: salt,
       );
-
-      /*
-        Backend connection will be enabled in a later phase.
-
-       */
-
-        await authRepository.completePinEnrollmentOnServer();
 
       if (!mounted) return;
 

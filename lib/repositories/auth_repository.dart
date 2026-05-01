@@ -12,7 +12,7 @@ class AuthRepository {
     required String email,
   }) async {
     final actionCodeSettings = ActionCodeSettings(
-      url: 'https://gastomigo.firebaseapp.com/finishSignUp',
+      url: 'https://seashell-antelope-329804.hostingersite.com/finishSignUp',
       handleCodeInApp: true,
       androidPackageName: 'com.app.gastomigo',
       androidInstallApp: true,
@@ -85,8 +85,34 @@ class AuthRepository {
     _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> getMyProfile() async {
+    final user = _firebaseAuth.currentUser;
+
+    if (user == null) {
+      throw Exception('Firebase user is not signed in.');
+    }
+
+    final idToken = await user.getIdToken(true);
+
+    final response = await http.get(
+      ApiClient.uri('/users/me'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
+
+    return _handleResponse(response);
+  }
+
   Map<String, dynamic> _handleResponse(http.Response response) {
-    final data = jsonDecode(response.body);
+    Map<String, dynamic> data;
+
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw Exception('Invalid server response.');
+    }
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return data;

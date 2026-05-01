@@ -55,30 +55,17 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
         throw Exception('Unable to sign in with Firebase.');
       }
 
-      /*
-        Backend connection will be enabled in a later phase.
+      final result = await authRepository.saveVerifiedProfile(
+        fullName: widget.fullName,
+      );
 
-       */
+      final user = result['user'];
 
-        final result = await authRepository.saveVerifiedProfile(
-          fullName: widget.fullName,
-        );
-
-        final user = result['user'];
-
-        await storage.saveUser(
-          firebaseUid: user['firebase_uid'],
-          fullName: user['full_name'],
-          email: user['email'],
-        );
-
-
-      // Temporary Phase 4 local save.
-      // await storage.saveUser(
-      //   firebaseUid: firebaseUser.uid,
-      //   fullName: widget.fullName,
-      //   email: firebaseUser.email ?? widget.email,
-      // );
+      await storage.saveUser(
+        firebaseUid: user['firebase_uid'],
+        fullName: user['full_name'],
+        email: user['email'],
+      );
 
       if (!mounted) return;
 
@@ -86,9 +73,9 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => EnrollPinScreen(
-            firebaseUid: firebaseUser.uid,
-            fullName: widget.fullName,
-            email: firebaseUser.email ?? widget.email,
+            firebaseUid: user['firebase_uid'],
+            fullName: user['full_name'],
+            email: user['email'],
           ),
         ),
       );

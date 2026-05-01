@@ -4,16 +4,18 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/presentation/screens/get_started_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   Future<void> resetAppLogin(BuildContext context) async {
     final storage = SecureStorageService();
+
     await storage.clearAll();
+    await FirebaseAuth.instance.signOut();
 
     if (!context.mounted) return;
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const GetStartedScreen()),
