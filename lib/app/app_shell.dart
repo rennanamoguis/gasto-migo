@@ -32,7 +32,13 @@ class _AppShellState extends State<AppShell> {
       TransactionsScreen(
         onAddTransaction: () => onTabSelected(2),
       ),
-      const AddTransactionScreen(),
+      AddTransactionScreen(
+        onTransactionSaved: () {
+          setState(() {
+            selectedIndex = 0;
+          });
+        },
+      ),
       const SettingsScreen(),
     ];
 
