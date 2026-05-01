@@ -68,8 +68,9 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
       /*
         Backend connection will be enabled in a later phase.
 
+       */
+
         await authRepository.completePinEnrollmentOnServer();
-      */
 
       if (!mounted) return;
 

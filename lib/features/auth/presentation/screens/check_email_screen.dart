@@ -58,6 +58,8 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
       /*
         Backend connection will be enabled in a later phase.
 
+       */
+
         final result = await authRepository.saveVerifiedProfile(
           fullName: widget.fullName,
         );
@@ -69,14 +71,14 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
           fullName: user['full_name'],
           email: user['email'],
         );
-      */
+
 
       // Temporary Phase 4 local save.
-      await storage.saveUser(
-        firebaseUid: firebaseUser.uid,
-        fullName: widget.fullName,
-        email: firebaseUser.email ?? widget.email,
-      );
+      // await storage.saveUser(
+      //   firebaseUid: firebaseUser.uid,
+      //   fullName: widget.fullName,
+      //   email: firebaseUser.email ?? widget.email,
+      // );
 
       if (!mounted) return;
 
