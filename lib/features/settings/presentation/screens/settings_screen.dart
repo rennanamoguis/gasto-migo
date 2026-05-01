@@ -5,34 +5,9 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/presentation/screens/get_started_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../../core/database/repository_debug.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-
-  Future<void> insertSampleTransaction(BuildContext context) async {
-    try {
-      await RepositoryDebug.insertSampleTransaction();
-
-      if (!context.mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sample transaction inserted.'),
-        ),
-      );
-    } catch (e) {
-      if (!context.mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString().replaceFirst('Exception: ', ''),
-          ),
-        ),
-      );
-    }
-  }
 
   Future<void> resetAppLogin(BuildContext context) async {
     final storage = SecureStorageService();
@@ -41,11 +16,43 @@ class SettingsScreen extends StatelessWidget {
     await FirebaseAuth.instance.signOut();
 
     if (!context.mounted) return;
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const GetStartedScreen()),
           (route) => false,
     );
+  }
+
+  Future<void> confirmResetAppLogin(BuildContext context) async {
+    final shouldReset = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Reset App Login?'),
+          content: const Text(
+            'This will clear your local PIN and sign out your Firebase session. Your local expenses will remain on this device.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: AppTheme.error,
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Reset'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldReset == true) {
+      await resetAppLogin(context);
+    }
   }
 
   @override
@@ -111,13 +118,6 @@ class SettingsScreen extends StatelessWidget {
                   title: 'Time Format',
                   trailingText: '12-hour',
                 ),
-                Divider(),
-                _SettingsTile(
-                  icon: Icons.bug_report_rounded,
-                  title: 'Insert Sample Transaction',
-                  trailingText: 'Debug',
-                  onTap: () => insertSampleTransaction(context),
-                ),
               ],
             ),
           ),
@@ -145,7 +145,7 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.restart_alt_rounded,
                   title: 'Reset App Login',
                   trailingText: 'Clear',
-                  onTap: () => resetAppLogin(context),
+                  onTap: () => confirmResetAppLogin(context),
                 ),
               ],
             ),

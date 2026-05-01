@@ -15,6 +15,7 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int selectedIndex = 0;
+  int refreshCounter = 0;
 
   void onTabSelected(int index) {
     setState(() {
@@ -22,21 +23,33 @@ class _AppShellState extends State<AppShell> {
     });
   }
 
+  void refreshData({int? goToTab}) {
+    setState(() {
+      refreshCounter++;
+
+      if (goToTab != null) {
+        selectedIndex = goToTab;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screens = [
       HomeScreen(
+        key: ValueKey('home-$refreshCounter'),
         onViewAllTransactions: () => onTabSelected(1),
         onAddTransaction: () => onTabSelected(2),
+        onChanged: () => refreshData(),
       ),
       TransactionsScreen(
+        key: ValueKey('transactions-$refreshCounter'),
         onAddTransaction: () => onTabSelected(2),
+        onChanged: () => refreshData(),
       ),
       AddTransactionScreen(
         onTransactionSaved: () {
-          setState(() {
-            selectedIndex = 0;
-          });
+          refreshData(goToTab: 0);
         },
       ),
       const SettingsScreen(),

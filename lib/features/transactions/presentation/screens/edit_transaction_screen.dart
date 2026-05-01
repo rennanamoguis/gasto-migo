@@ -249,6 +249,16 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
       return;
     }
 
+    if (discountAmount < 0 || taxAmount < 0) {
+      showMessage('Discount and tax cannot be negative.');
+      return;
+    }
+
+    if (subtotalAmount < 0) {
+      showMessage('Subtotal cannot be negative.');
+      return;
+    }
+
     final item = TransactionItemForm(
       itemName: itemName,
       categoryId: selectedCategoryId,

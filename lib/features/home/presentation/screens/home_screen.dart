@@ -11,11 +11,13 @@ import '../../../transactions/presentation/screens/transaction_details_screen.da
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onViewAllTransactions;
   final VoidCallback? onAddTransaction;
+  final VoidCallback? onChanged;
 
   const HomeScreen({
     super.key,
     this.onViewAllTransactions,
     this.onAddTransaction,
+    this.onChanged,
   });
 
   @override
@@ -49,7 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+
     if (result == true) {
+      widget.onChanged?.call();
       await loadDashboard();
     }
   }
@@ -118,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: RefreshIndicator(
         onRefresh: loadDashboard,
         child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
           children: [
             const Text(

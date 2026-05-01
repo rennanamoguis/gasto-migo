@@ -10,10 +10,12 @@ import 'transaction_details_screen.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final VoidCallback? onAddTransaction;
+  final VoidCallback? onChanged;
 
   const TransactionsScreen({
     super.key,
     this.onAddTransaction,
+    this.onChanged,
   });
 
   @override
@@ -58,6 +60,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
 
     if (result == true) {
+      widget.onChanged?.call();
       await loadTransactions();
     }
   }
@@ -200,6 +203,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       body: RefreshIndicator(
         onRefresh: loadTransactions,
         child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
           children: [
             TextField(

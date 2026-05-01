@@ -271,11 +271,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       );
 
       if (!mounted) return;
-
       showMessage('Transaction saved successfully.');
-
       clearForm();
-
       widget.onTransactionSaved?.call();
     } catch (e) {
       showMessage(
@@ -779,6 +776,11 @@ class _AddItemSheetState extends State<_AddItemSheet> {
 
     if (unitPriceAmount <= 0) {
       showMessage('Unit price must be greater than zero.');
+      return;
+    }
+
+    if (discountAmount < 0 || taxAmount < 0) {
+      showMessage('Discount and tax cannot be negative.');
       return;
     }
 

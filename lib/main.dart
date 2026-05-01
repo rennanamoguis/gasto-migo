@@ -14,7 +14,7 @@ void main() async {
   );
 
   await AppDatabase.instance.database;
-  await DatabaseDebug.printDatabaseStatus();
+  //await DatabaseDebug.printDatabaseStatus();
 
   runApp(const GastoMigoApp());
 }
