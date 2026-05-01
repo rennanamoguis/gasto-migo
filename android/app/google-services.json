@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "332340934159",
+    "project_id": "gastomigo",
+    "storage_bucket": "gastomigo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332340934159:android:324e84cd921ad4da00d57a",
+        "android_client_info": {
+          "package_name": "com.app.gastomigo.gastomigo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGyG1RBO5H-5jLdU6znqdN5MR0o6moqXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332340934159:android:0a80f83721f2f17700d57a",
+        "android_client_info": {
+          "package_name": "com.application.gastomigo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGyG1RBO5H-5jLdU6znqdN5MR0o6moqXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
