@@ -231,8 +231,20 @@ class TransactionRepository {
       await txn.update(
         'expense_transactions',
         {
-          ...transaction.toMap(),
-          'id': transactionId,
+          'merchant_id': transaction.merchantId,
+          'title': transaction.title,
+          'transaction_date': transaction.transactionDate,
+          'transaction_time': transaction.transactionTime,
+          'payment_method_id': transaction.paymentMethodId,
+          'account_id': transaction.accountId,
+          'notes': transaction.notes,
+          'subtotal_amount': transaction.subtotalAmount,
+          'discount_amount': transaction.discountAmount,
+          'tax_amount': transaction.taxAmount,
+          'extra_amount': transaction.extraAmount,
+          'total_amount': transaction.totalAmount,
+          'item_count': transaction.itemCount,
+          'receipt_count': transaction.receiptCount,
           'updated_at': now,
           'sync_status': 'pending_update',
         },
@@ -260,11 +272,8 @@ class TransactionRepository {
     if (result.isEmpty) return 0;
 
     final value = result.first['total'];
-
     if (value == null) return 0;
-
     if (value is int) return value;
-
     if (value is num) return value.toInt();
 
     return int.tryParse(value.toString()) ?? 0;

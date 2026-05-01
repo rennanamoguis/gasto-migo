@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state_view.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../repositories/transaction_repository.dart';
+import '../../../transactions/presentation/screens/transaction_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onViewAllTransactions;
@@ -36,6 +37,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     loadDashboard();
+  }
+
+  Future<void> openDetails(int transactionId) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TransactionDetailsScreen(
+          transactionId: transactionId,
+          onChanged: loadDashboard,
+        ),
+      ),
+    );
+    if (result == true) {
+      await loadDashboard();
+    }
   }
 
   Future<void> loadDashboard() async {
@@ -234,13 +250,14 @@ class _HomeScreenState extends State<HomeScreen> {
             else
               ...recentTransactions.map(
                     (transaction) => _TransactionPreviewTile(
-                  title: _getTransactionTitle(transaction),
-                  subtitle: _getTransactionSubtitle(transaction),
-                  amount: MoneyUtils.centavosToPesoText(
-                    _readInt(transaction['total_amount']),
-                  ),
-                  itemCount: _readInt(transaction['item_count']),
-                ),
+                      title: _getTransactionTitle(transaction),
+                      subtitle: _getTransactionSubtitle(transaction),
+                      amount: MoneyUtils.centavosToPesoText(
+                        _readInt(transaction['total_amount']),
+                      ),
+                      itemCount: _readInt(transaction['item_count']),
+                      onTap: () => openDetails(_readInt(transaction['id'])),
+                    ),
               ),
           ],
         ),
@@ -321,12 +338,14 @@ class _TransactionPreviewTile extends StatelessWidget {
   final String subtitle;
   final String amount;
   final int itemCount;
+  final VoidCallback? onTap;
 
   const _TransactionPreviewTile({
     required this.title,
     required this.subtitle,
     required this.amount,
     required this.itemCount,
+    this.onTap,
   });
 
   @override
@@ -335,6 +354,7 @@ class _TransactionPreviewTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: AppCard(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        onTap: onTap,
         child: Row(
           children: [
             Container(

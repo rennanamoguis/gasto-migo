@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state_view.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../repositories/transaction_repository.dart';
+import 'transaction_details_screen.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final VoidCallback? onAddTransaction;
@@ -43,6 +44,22 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     super.initState();
     searchController.addListener(applyFilters);
     loadTransactions();
+  }
+
+  Future<void> openDetails(int transactionId) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TransactionDetailsScreen(
+          transactionId: transactionId,
+          onChanged: loadTransactions,
+        ),
+      ),
+    );
+
+    if (result == true) {
+      await loadTransactions();
+    }
   }
 
   Future<void> loadTransactions() async {
@@ -270,15 +287,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             else
               ...filteredTransactions.map(
                     (transaction) => _TransactionListItem(
-                  title: _getTransactionTitle(transaction),
-                  subtitle: _getTransactionSubtitle(transaction),
-                  amount: MoneyUtils.centavosToPesoText(
-                    _readInt(transaction['total_amount']),
-                  ),
-                  itemCount: _readInt(transaction['item_count']),
-                  paymentMethod:
-                  transaction['payment_method_name']?.toString(),
-                ),
+                      title: _getTransactionTitle(transaction),
+                      subtitle: _getTransactionSubtitle(transaction),
+                      amount: MoneyUtils.centavosToPesoText(
+                        _readInt(transaction['total_amount']),
+                      ),
+                      itemCount: _readInt(transaction['item_count']),
+                      paymentMethod: transaction['payment_method_name']?.toString(),
+                      onTap: () => openDetails(_readInt(transaction['id'])),
+                    ),
               ),
           ],
         ),
@@ -322,6 +339,7 @@ class _TransactionListItem extends StatelessWidget {
   final String amount;
   final int itemCount;
   final String? paymentMethod;
+  final VoidCallback? onTap;
 
   const _TransactionListItem({
     required this.title,
@@ -329,6 +347,7 @@ class _TransactionListItem extends StatelessWidget {
     required this.amount,
     required this.itemCount,
     this.paymentMethod,
+    this.onTap,
   });
 
   @override
@@ -340,6 +359,7 @@ class _TransactionListItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: AppCard(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        onTap: onTap,
         child: Row(
           children: [
             Container(
