@@ -8,9 +8,7 @@ import '../core/network/api_client.dart';
 class AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Future<void> sendEmailVerificationLink({
-    required String email,
-  }) async {
+  Future<void> sendEmailVerificationLink({required String email}) async {
     final actionCodeSettings = ActionCodeSettings(
       url: 'https://seashell-antelope-329804.hostingersite.com/finishSignUp',
       handleCodeInApp: true,
@@ -57,9 +55,7 @@ class AuthRepository {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $idToken',
       },
-      body: jsonEncode({
-        'full_name': fullName,
-      }),
+      body: jsonEncode({'full_name': fullName}),
     );
 
     return _handleResponse(response);

@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class LoadingView extends StatelessWidget {
   final String? message;
 
-  const LoadingView({
-    super.key,
-    this.message,
-  });
+  const LoadingView({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +16,7 @@ class LoadingView extends StatelessWidget {
             const CircularProgressIndicator(),
             if (message != null) ...[
               const SizedBox(height: 14),
-              Text(
-                message!,
-                textAlign: TextAlign.center,
-              ),
+              Text(message!, textAlign: TextAlign.center),
             ],
           ],
         ),

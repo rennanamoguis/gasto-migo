@@ -43,16 +43,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => CheckEmailScreen(
-            fullName: fullName,
-            email: email,
-          ),
+          builder: (_) => CheckEmailScreen(fullName: fullName, email: email),
         ),
       );
     } catch (e) {
-      showMessage(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => isLoading = false);
@@ -61,11 +56,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -79,9 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: const Text('Create Account'),
-      ),
+      appBar: AppBar(title: const Text('Create Account')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -133,13 +124,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             onPressed: isLoading ? null : sendLink,
             child: isLoading
                 ? const SizedBox(
-              height: 22,
-              width: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Text('Send Verification Link'),
           ),
 
@@ -148,10 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const Text(
             'You must verify your email before enrolling your offline PIN.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
         ],
       ),

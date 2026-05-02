@@ -68,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final today = await transactionRepository.getTodayTotal();
       final week = await transactionRepository.getWeekTotal();
       final month = await transactionRepository.getMonthTotal();
-      final recent = await transactionRepository.getRecentTransactions(limit: 5);
+      final recent = await transactionRepository.getRecentTransactions(
+        limit: 5,
+      );
 
       if (!mounted) return;
 
@@ -93,18 +95,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('GastoMigo'),
-        ),
+        appBar: AppBar(title: const Text('GastoMigo')),
         body: const LoadingView(message: 'Loading dashboard...'),
       );
     }
 
     if (errorMessage != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('GastoMigo'),
-        ),
+        appBar: AppBar(title: const Text('GastoMigo')),
         body: EmptyStateView(
           icon: Icons.error_outline_rounded,
           title: 'Unable to load dashboard',
@@ -116,9 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('GastoMigo'),
-      ),
+      appBar: AppBar(title: const Text('GastoMigo')),
       body: RefreshIndicator(
         onRefresh: loadDashboard,
         child: ListView(
@@ -136,10 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 4),
             const Text(
               'Here’s your spending overview',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 16),
 
@@ -254,15 +247,15 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             else
               ...recentTransactions.map(
-                    (transaction) => _TransactionPreviewTile(
-                      title: _getTransactionTitle(transaction),
-                      subtitle: _getTransactionSubtitle(transaction),
-                      amount: MoneyUtils.centavosToPesoText(
-                        _readInt(transaction['total_amount']),
-                      ),
-                      itemCount: _readInt(transaction['item_count']),
-                      onTap: () => openDetails(_readInt(transaction['id'])),
-                    ),
+                (transaction) => _TransactionPreviewTile(
+                  title: _getTransactionTitle(transaction),
+                  subtitle: _getTransactionSubtitle(transaction),
+                  amount: MoneyUtils.centavosToPesoText(
+                    _readInt(transaction['total_amount']),
+                  ),
+                  itemCount: _readInt(transaction['item_count']),
+                  onTap: () => openDetails(_readInt(transaction['id'])),
+                ),
               ),
           ],
         ),

@@ -33,11 +33,7 @@ class EmptyStateView extends StatelessWidget {
                 color: AppTheme.primaryContainer,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: Icon(
-                icon,
-                color: AppTheme.primary,
-                size: 40,
-              ),
+              child: Icon(icon, color: AppTheme.primary, size: 40),
             ),
             const SizedBox(height: 18),
             Text(

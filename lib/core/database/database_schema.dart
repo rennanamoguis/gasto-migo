@@ -169,6 +169,27 @@ class DatabaseSchema {
       'updated_at': now,
     });
 
+    await db.insert('app_meta', {
+      'key': 'currency_code',
+      'value': 'PHP',
+      'created_at': now,
+      'updated_at': now,
+    });
+
+    await db.insert('app_meta', {
+      'key': 'currency_symbol',
+      'value': '₱',
+      'created_at': now,
+      'updated_at': now,
+    });
+
+    await db.insert('app_meta', {
+      'key': 'currency_name',
+      'value': 'Philippine Peso',
+      'created_at': now,
+      'updated_at': now,
+    });
+
     await db.insert('payment_methods', {
       'uuid': 'pm-cash',
       'name': 'Cash',

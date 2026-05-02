@@ -22,11 +22,7 @@ class PlaceholderContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 72,
-              color: AppTheme.primary,
-            ),
+            Icon(icon, size: 72, color: AppTheme.primary),
             const SizedBox(height: 20),
             Text(
               title,

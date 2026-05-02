@@ -3,7 +3,6 @@ import 'package:gastomigo/features/auth/presentation/screens/splash_screen.dart'
 
 import '../core/constants/app_constants.dart';
 import '../core/theme/app_theme.dart';
-import 'app_shell.dart';
 
 class GastoMigoApp extends StatelessWidget {
   const GastoMigoApp({super.key});

@@ -22,6 +22,21 @@ class MoneyUtils {
     return formatter.format(pesos);
   }
 
+  static String formatAmount(
+      int minorUnitAmount, {
+        String currencySymbol = '₱',
+      }) {
+    final amount = minorUnitAmount / 100;
+
+    final formatter = NumberFormat.currency(
+      locale: 'en_PH',
+      symbol: currencySymbol,
+      decimalDigits: 2,
+    );
+
+    return formatter.format(amount);
+  }
+
   static int calculateItemSubtotal({
     required double quantity,
     required int unitPriceAmount,

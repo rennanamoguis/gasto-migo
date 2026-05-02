@@ -58,7 +58,8 @@ class TransactionRepository {
   }) async {
     final db = await AppDatabase.instance.database;
 
-    return await db.rawQuery('''
+    return await db.rawQuery(
+      '''
       SELECT
         t.*,
         m.name AS merchant_name,
@@ -71,13 +72,16 @@ class TransactionRepository {
       WHERE t.deleted_at IS NULL
       ORDER BY t.transaction_date DESC, t.transaction_time DESC, t.id DESC
       LIMIT ?
-    ''', [limit]);
+    ''',
+      [limit],
+    );
   }
 
   Future<Map<String, dynamic>?> getTransactionById(int id) async {
     final db = await AppDatabase.instance.database;
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
       SELECT
         t.*,
         m.name AS merchant_name,
@@ -89,7 +93,9 @@ class TransactionRepository {
       LEFT JOIN accounts a ON a.id = t.account_id
       WHERE t.id = ? AND t.deleted_at IS NULL
       LIMIT 1
-    ''', [id]);
+    ''',
+      [id],
+    );
 
     if (result.isEmpty) return null;
 
@@ -97,11 +103,12 @@ class TransactionRepository {
   }
 
   Future<List<Map<String, dynamic>>> getItemsByTransactionId(
-      int transactionId,
-      ) async {
+    int transactionId,
+  ) async {
     final db = await AppDatabase.instance.database;
 
-    return await db.rawQuery('''
+    return await db.rawQuery(
+      '''
       SELECT
         i.*,
         c.name AS category_name,
@@ -111,7 +118,9 @@ class TransactionRepository {
       LEFT JOIN categories c ON c.id = i.category_id
       WHERE i.transaction_id = ? AND i.deleted_at IS NULL
       ORDER BY i.line_no ASC
-    ''', [transactionId]);
+    ''',
+      [transactionId],
+    );
   }
 
   Future<void> softDeleteTransaction(int transactionId) async {
@@ -121,22 +130,14 @@ class TransactionRepository {
     await db.transaction((txn) async {
       await txn.update(
         'expense_transactions',
-        {
-          'deleted_at': now,
-          'updated_at': now,
-          'sync_status': 'pending_delete',
-        },
+        {'deleted_at': now, 'updated_at': now, 'sync_status': 'pending_delete'},
         where: 'id = ?',
         whereArgs: [transactionId],
       );
 
       await txn.update(
         'expense_transaction_items',
-        {
-          'deleted_at': now,
-          'updated_at': now,
-          'sync_status': 'pending_delete',
-        },
+        {'deleted_at': now, 'updated_at': now, 'sync_status': 'pending_delete'},
         where: 'transaction_id = ?',
         whereArgs: [transactionId],
       );
@@ -147,12 +148,15 @@ class TransactionRepository {
     final db = await AppDatabase.instance.database;
     final today = DateRangeUtils.todayDate();
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
       SELECT COALESCE(SUM(total_amount), 0) AS total
       FROM expense_transactions
       WHERE transaction_date = ?
       AND deleted_at IS NULL
-    ''', [today]);
+    ''',
+      [today],
+    );
 
     return _readTotal(result);
   }
@@ -161,12 +165,15 @@ class TransactionRepository {
     final db = await AppDatabase.instance.database;
     final monthPrefix = DateRangeUtils.currentMonthPrefix();
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
       SELECT COALESCE(SUM(total_amount), 0) AS total
       FROM expense_transactions
       WHERE transaction_date LIKE ?
       AND deleted_at IS NULL
-    ''', ['$monthPrefix%']);
+    ''',
+      ['$monthPrefix%'],
+    );
 
     return _readTotal(result);
   }
@@ -175,29 +182,30 @@ class TransactionRepository {
     final db = await AppDatabase.instance.database;
     final now = DateTime.now();
 
-    final start = DateRangeUtils.dateOnly(
-      DateRangeUtils.startOfWeek(now),
-    );
+    final start = DateRangeUtils.dateOnly(DateRangeUtils.startOfWeek(now));
 
-    final end = DateRangeUtils.dateOnly(
-      DateRangeUtils.endOfWeek(now),
-    );
+    final end = DateRangeUtils.dateOnly(DateRangeUtils.endOfWeek(now));
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
       SELECT COALESCE(SUM(total_amount), 0) AS total
       FROM expense_transactions
       WHERE transaction_date BETWEEN ? AND ?
       AND deleted_at IS NULL
-    ''', [start, end]);
+    ''',
+      [start, end],
+    );
 
     return _readTotal(result);
   }
 
-  Future<List<Map<String, dynamic>>> getTotalsByCategoryForCurrentMonth() async {
+  Future<List<Map<String, dynamic>>>
+  getTotalsByCategoryForCurrentMonth() async {
     final db = await AppDatabase.instance.database;
     final monthPrefix = DateRangeUtils.currentMonthPrefix();
 
-    return await db.rawQuery('''
+    return await db.rawQuery(
+      '''
       SELECT
         c.id AS category_id,
         c.name AS category_name,
@@ -212,7 +220,9 @@ class TransactionRepository {
       AND i.deleted_at IS NULL
       GROUP BY c.id, c.name, c.color, c.icon
       ORDER BY total_amount DESC
-    ''', ['$monthPrefix%']);
+    ''',
+      ['$monthPrefix%'],
+    );
   }
 
   Future<void> updateTransaction({

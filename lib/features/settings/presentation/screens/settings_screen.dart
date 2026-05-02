@@ -6,6 +6,15 @@ import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/presentation/screens/get_started_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'about_screen.dart';
+import 'accounts_screen.dart';
+import 'backup_restore_screen.dart';
+import 'categories_screen.dart';
+import 'change_pin_screen.dart';
+import 'currency_screen.dart';
+import 'merchants_screen.dart';
+import 'payment_methods_screen.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -20,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const GetStartedScreen()),
-          (route) => false,
+      (route) => false,
     );
   }
 
@@ -39,9 +48,7 @@ class SettingsScreen extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: AppTheme.error,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.error),
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Reset'),
             ),
@@ -58,9 +65,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -73,21 +78,45 @@ class SettingsScreen extends StatelessWidget {
                 _SettingsTile(
                   icon: Icons.category_rounded,
                   title: 'Categories',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                    );
+                  },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.payment_rounded,
                   title: 'Payment Methods',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+                    );
+                  },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.account_balance_wallet_rounded,
                   title: 'Accounts',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AccountsScreen()),
+                    );
+                  },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.storefront_rounded,
                   title: 'Merchants',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MerchantsScreen()),
+                    );
+                  },
                 ),
               ],
             ),
@@ -104,7 +133,13 @@ class SettingsScreen extends StatelessWidget {
                 _SettingsTile(
                   icon: Icons.attach_money_rounded,
                   title: 'Currency',
-                  trailingText: 'PHP (₱)',
+                  trailingText: 'Default',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CurrencyScreen()),
+                    );
+                  },
                 ),
                 Divider(),
                 _SettingsTile(
@@ -134,11 +169,34 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.info_outline_rounded,
                   title: 'About GastoMigo',
                   trailingText: 'v1.0.0',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AboutScreen()),
+                    );
+                  },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.backup_rounded,
                   title: 'Backup & Restore',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BackupRestoreScreen()),
+                    );
+                  },
+                ),
+                Divider(),
+                _SettingsTile(
+                  icon: Icons.lock_reset_rounded,
+                  title: 'Change PIN',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChangePinScreen()),
+                    );
+                  },
                 ),
                 Divider(),
                 _SettingsTile(
@@ -191,10 +249,7 @@ class _SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: AppTheme.primary,
-      ),
+      leading: Icon(icon, color: AppTheme.primary),
       title: Text(
         title,
         style: const TextStyle(

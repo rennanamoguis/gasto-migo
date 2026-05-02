@@ -22,11 +22,7 @@ class DateRangeUtils {
   }
 
   static DateTime startOfWeek(DateTime date) {
-    return DateTime(
-      date.year,
-      date.month,
-      date.day - (date.weekday - 1),
-    );
+    return DateTime(date.year, date.month, date.day - (date.weekday - 1));
   }
 
   static DateTime endOfWeek(DateTime date) {

@@ -70,11 +70,9 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -134,10 +132,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
             const Text(
               'Enter your 6-digit PIN to continue.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
 
             const SizedBox(height: 32),
@@ -161,10 +156,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
             const SizedBox(height: 24),
 
-            FilledButton(
-              onPressed: login,
-              child: const Text('Unlock'),
-            ),
+            FilledButton(onPressed: login, child: const Text('Unlock')),
           ],
         ),
       ),

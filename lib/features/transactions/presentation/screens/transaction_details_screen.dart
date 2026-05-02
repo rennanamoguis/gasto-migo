@@ -45,8 +45,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     });
 
     try {
-      final loadedTransaction =
-      await transactionRepository.getTransactionById(widget.transactionId);
+      final loadedTransaction = await transactionRepository.getTransactionById(
+        widget.transactionId,
+      );
 
       final loadedItems = await transactionRepository.getItemsByTransactionId(
         widget.transactionId,
@@ -84,9 +85,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
               child: const Text('Cancel'),
             ),
             FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: AppTheme.error,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.error),
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Delete'),
             ),
@@ -104,20 +103,16 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Transaction deleted.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Transaction deleted.')));
 
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
-        ),
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
       );
     }
   }
@@ -126,9 +121,8 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => EditTransactionScreen(
-          transactionId: widget.transactionId,
-        ),
+        builder: (_) =>
+            EditTransactionScreen(transactionId: widget.transactionId),
       ),
     );
 
@@ -142,18 +136,14 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Transaction Details'),
-        ),
+        appBar: AppBar(title: Text('Transaction Details')),
         body: LoadingView(message: 'Loading transaction...'),
       );
     }
 
     if (errorMessage != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Transaction Details'),
-        ),
+        appBar: AppBar(title: const Text('Transaction Details')),
         body: EmptyStateView(
           icon: Icons.error_outline_rounded,
           title: 'Unable to load transaction',
@@ -166,9 +156,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
     if (transaction == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Transaction Details'),
-        ),
+        appBar: AppBar(title: const Text('Transaction Details')),
         body: const EmptyStateView(
           icon: Icons.receipt_long_rounded,
           title: 'Transaction not found',
@@ -290,9 +278,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
               const AppCard(
                 child: Text(
                   'No items found for this transaction.',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                  ),
+                  style: TextStyle(color: AppTheme.textSecondary),
                 ),
               )
             else
@@ -301,8 +287,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                   children: [
                     for (int index = 0; index < items.length; index++) ...[
                       _ItemDetailsRow(item: items[index]),
-                      if (index != items.length - 1)
-                        const Divider(height: 22),
+                      if (index != items.length - 1) const Divider(height: 22),
                     ],
                   ],
                 ),
@@ -382,11 +367,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: AppTheme.primary,
-          size: 20,
-        ),
+        Icon(icon, color: AppTheme.primary, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -420,9 +401,7 @@ class _InfoRow extends StatelessWidget {
 class _ItemDetailsRow extends StatelessWidget {
   final Map<String, dynamic> item;
 
-  const _ItemDetailsRow({
-    required this.item,
-  });
+  const _ItemDetailsRow({required this.item});
 
   @override
   Widget build(BuildContext context) {

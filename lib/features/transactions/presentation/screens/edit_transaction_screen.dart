@@ -18,10 +18,7 @@ import '../../../add_transaction/presentation/models/transaction_item_form.dart'
 class EditTransactionScreen extends StatefulWidget {
   final int transactionId;
 
-  const EditTransactionScreen({
-    super.key,
-    required this.transactionId,
-  });
+  const EditTransactionScreen({super.key, required this.transactionId});
 
   @override
   State<EditTransactionScreen> createState() => _EditTransactionScreenState();
@@ -54,11 +51,7 @@ class _PickerCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: AppTheme.primary,
-              size: 18,
-            ),
+            Icon(icon, color: AppTheme.primary, size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -94,10 +87,7 @@ class _EditableItemRow extends StatelessWidget {
   final TransactionItemForm item;
   final VoidCallback onRemove;
 
-  const _EditableItemRow({
-    required this.item,
-    required this.onRemove,
-  });
+  const _EditableItemRow({required this.item, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -140,10 +130,7 @@ class _EditableItemRow extends StatelessWidget {
         ),
         IconButton(
           onPressed: onRemove,
-          icon: const Icon(
-            Icons.close_rounded,
-            color: AppTheme.error,
-          ),
+          icon: const Icon(Icons.close_rounded, color: AppTheme.error),
         ),
       ],
     );
@@ -190,9 +177,7 @@ class _SummaryRow extends StatelessWidget {
 class _EditAddItemSheet extends StatefulWidget {
   final List<CategoryModel> categories;
 
-  const _EditAddItemSheet({
-    required this.categories,
-  });
+  const _EditAddItemSheet({required this.categories});
 
   @override
   State<_EditAddItemSheet> createState() => _EditAddItemSheetState();
@@ -276,9 +261,9 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -338,7 +323,7 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<int?>(
-                value: selectedCategoryId,
+                initialValue: selectedCategoryId,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   prefixIcon: Icon(Icons.category_rounded),
@@ -370,9 +355,7 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Quantity',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Quantity'),
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
@@ -380,9 +363,7 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
                   Expanded(
                     child: TextField(
                       controller: unitController,
-                      decoration: const InputDecoration(
-                        labelText: 'Unit',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Unit'),
                     ),
                   ),
                 ],
@@ -550,8 +531,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
 
       final merchantName =
           transaction['merchant_name']?.toString() ??
-              transaction['title']?.toString() ??
-              '';
+          transaction['title']?.toString() ??
+          '';
 
       final mappedItems = loadedItems.map((item) {
         return TransactionItemForm(
@@ -642,14 +623,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       isScrollControlled: true,
       backgroundColor: AppTheme.background,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return _EditAddItemSheet(
-          categories: categories,
-        );
+        return _EditAddItemSheet(categories: categories);
       },
     );
 
@@ -752,9 +729,9 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Transaction updated.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Transaction updated.')));
 
       Navigator.pop(context, true);
     } catch (e) {
@@ -767,9 +744,9 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -848,7 +825,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
-                  value: selectedPaymentMethodId,
+                  initialValue: selectedPaymentMethodId,
                   decoration: const InputDecoration(
                     labelText: 'Payment Method',
                     prefixIcon: Icon(Icons.payment_rounded),
@@ -867,7 +844,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
-                  value: selectedAccountId,
+                  initialValue: selectedAccountId,
                   decoration: const InputDecoration(
                     labelText: 'Account',
                     prefixIcon: Icon(Icons.account_balance_wallet_rounded),
@@ -973,13 +950,13 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
             onPressed: isSaving ? null : saveChanges,
             icon: isSaving
                 ? const SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Icon(Icons.save_rounded),
             label: Text(isSaving ? 'Saving...' : 'Save Changes'),
           ),

@@ -79,7 +79,7 @@ class RepositoryDebug {
 
     final subtotal = items.fold<int>(
       0,
-          (sum, item) => sum + item.subtotalAmount,
+      (sum, item) => sum + item.subtotalAmount,
     );
 
     final transaction = ExpenseTransaction(

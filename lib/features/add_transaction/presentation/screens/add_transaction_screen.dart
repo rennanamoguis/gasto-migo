@@ -17,10 +17,7 @@ import '../models/transaction_item_form.dart';
 class AddTransactionScreen extends StatefulWidget {
   final VoidCallback? onTransactionSaved;
 
-  const AddTransactionScreen({
-    super.key,
-    this.onTransactionSaved,
-  });
+  const AddTransactionScreen({super.key, this.onTransactionSaved});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -51,24 +48,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   List<TransactionItemForm> items = [];
 
   int get subtotalAmount {
-    return items.fold<int>(
-      0,
-          (sum, item) => sum + item.subtotalAmount,
-    );
+    return items.fold<int>(0, (sum, item) => sum + item.subtotalAmount);
   }
 
   int get discountAmount {
-    return items.fold<int>(
-      0,
-          (sum, item) => sum + item.discountAmount,
-    );
+    return items.fold<int>(0, (sum, item) => sum + item.discountAmount);
   }
 
   int get taxAmount {
-    return items.fold<int>(
-      0,
-          (sum, item) => sum + item.taxAmount,
-    );
+    return items.fold<int>(0, (sum, item) => sum + item.taxAmount);
   }
 
   int get extraAmount => 0;
@@ -91,8 +79,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       final loadedPaymentMethods = await lookupRepository.getPaymentMethods();
       final loadedAccounts = await lookupRepository.getAccounts();
 
-      final defaultPaymentMethodId =
-      await lookupRepository.getDefaultPaymentMethodId();
+      final defaultPaymentMethodId = await lookupRepository
+          .getDefaultPaymentMethodId();
       final defaultAccountId = await lookupRepository.getDefaultAccountId();
 
       if (!mounted) return;
@@ -110,9 +98,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
       setState(() => isLoading = false);
 
-      showMessage(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -163,14 +149,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       isScrollControlled: true,
       backgroundColor: AppTheme.background,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return _AddItemSheet(
-          categories: categories,
-        );
+        return _AddItemSheet(categories: categories);
       },
     );
 
@@ -275,9 +257,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       clearForm();
       widget.onTransactionSaved?.call();
     } catch (e) {
-      showMessage(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => isSaving = false);
@@ -304,9 +284,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -320,12 +300,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Add Transaction'),
-        ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text('Add Transaction')),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -377,7 +353,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
-                  value: selectedPaymentMethodId,
+                  initialValue: selectedPaymentMethodId,
                   decoration: const InputDecoration(
                     labelText: 'Payment Method',
                     prefixIcon: Icon(Icons.payment_rounded),
@@ -396,7 +372,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
-                  value: selectedAccountId,
+                  initialValue: selectedAccountId,
                   decoration: const InputDecoration(
                     labelText: 'Account',
                     prefixIcon: Icon(Icons.account_balance_wallet_rounded),
@@ -539,13 +515,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             onPressed: isSaving ? null : saveTransaction,
             icon: isSaving
                 ? const SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Icon(Icons.save_rounded),
             label: Text(isSaving ? 'Saving...' : 'Save Transaction'),
           ),
@@ -584,11 +560,7 @@ class _PickerCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: AppTheme.primary,
-              size: 18,
-            ),
+            Icon(icon, color: AppTheme.primary, size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -624,10 +596,7 @@ class _ItemRow extends StatelessWidget {
   final TransactionItemForm item;
   final VoidCallback onRemove;
 
-  const _ItemRow({
-    required this.item,
-    required this.onRemove,
-  });
+  const _ItemRow({required this.item, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -670,10 +639,7 @@ class _ItemRow extends StatelessWidget {
         ),
         IconButton(
           onPressed: onRemove,
-          icon: const Icon(
-            Icons.close_rounded,
-            color: AppTheme.error,
-          ),
+          icon: const Icon(Icons.close_rounded, color: AppTheme.error),
         ),
       ],
     );
@@ -720,9 +686,7 @@ class _SummaryRow extends StatelessWidget {
 class _AddItemSheet extends StatefulWidget {
   final List<CategoryModel> categories;
 
-  const _AddItemSheet({
-    required this.categories,
-  });
+  const _AddItemSheet({required this.categories});
 
   @override
   State<_AddItemSheet> createState() => _AddItemSheetState();
@@ -806,9 +770,9 @@ class _AddItemSheetState extends State<_AddItemSheet> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -865,10 +829,7 @@ class _AddItemSheetState extends State<_AddItemSheet> {
 
               const Text(
                 'Enter the item details for this transaction.',
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
 
               const SizedBox(height: 20),
@@ -885,7 +846,7 @@ class _AddItemSheetState extends State<_AddItemSheet> {
               const SizedBox(height: 12),
 
               DropdownButtonFormField<int?>(
-                value: selectedCategoryId,
+                initialValue: selectedCategoryId,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   prefixIcon: Icon(Icons.category_rounded),
@@ -919,9 +880,7 @@ class _AddItemSheetState extends State<_AddItemSheet> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Quantity',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Quantity'),
                       onChanged: (_) => setState(() {}),
                     ),
                   ),

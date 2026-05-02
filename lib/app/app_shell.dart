@@ -56,16 +56,11 @@ class _AppShellState extends State<AppShell> {
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: selectedIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: selectedIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: AppTheme.surface,
-          border: Border(
-            top: BorderSide(color: AppTheme.border),
-          ),
+          border: Border(top: BorderSide(color: AppTheme.border)),
         ),
         child: SafeArea(
           top: false,

@@ -49,10 +49,7 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
 
     try {
       final salt = PinUtils.generateSalt();
-      final hash = PinUtils.hashPin(
-        pin: pin,
-        salt: salt,
-      );
+      final hash = PinUtils.hashPin(pin: pin, salt: salt);
 
       await authRepository.completePinEnrollmentOnServer();
 
@@ -62,22 +59,17 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
         email: widget.email,
       );
 
-      await storage.savePin(
-        pinHash: hash,
-        pinSalt: salt,
-      );
+      await storage.savePin(pinHash: hash, pinSalt: salt);
 
       if (!mounted) return;
 
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const AppShell()),
-            (route) => false,
+        (route) => false,
       );
     } catch (e) {
-      showMessage(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => isLoading = false);
@@ -86,11 +78,9 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -104,9 +94,7 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: const Text('Create PIN'),
-      ),
+      appBar: AppBar(title: const Text('Create PIN')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -164,13 +152,13 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
             onPressed: isLoading ? null : enrollPin,
             child: isLoading
                 ? const SizedBox(
-              height: 22,
-              width: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Text('Save PIN'),
           ),
 

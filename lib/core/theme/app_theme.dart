@@ -60,18 +60,9 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: surface,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 14,
-      ),
-      labelStyle: const TextStyle(
-        color: textSecondary,
-        fontSize: 14,
-      ),
-      hintStyle: const TextStyle(
-        color: textSecondary,
-        fontSize: 14,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      labelStyle: const TextStyle(color: textSecondary, fontSize: 14),
+      hintStyle: const TextStyle(color: textSecondary, fontSize: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: border),
@@ -91,13 +82,8 @@ class AppTheme {
         backgroundColor: primary,
         foregroundColor: textInverse,
         minimumSize: const Size(double.infinity, 52),
-        textStyle: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     ),
 
@@ -106,13 +92,8 @@ class AppTheme {
         foregroundColor: primary,
         minimumSize: const Size(double.infinity, 52),
         side: const BorderSide(color: border),
-        textStyle: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     ),
 
@@ -121,20 +102,13 @@ class AppTheme {
       selectedItemColor: primary,
       unselectedItemColor: textSecondary,
       type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-      ),
+      selectedLabelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
       unselectedLabelStyle: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w500,
       ),
     ),
 
-    dividerTheme: const DividerThemeData(
-      color: border,
-      thickness: 1,
-      space: 1,
-    ),
+    dividerTheme: const DividerThemeData(color: border, thickness: 1, space: 1),
   );
 }

@@ -68,9 +68,7 @@ class GetStartedScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const RegisterScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
                   );
                 },
                 child: const Text('Get Started'),
@@ -81,10 +79,7 @@ class GetStartedScreen extends StatelessWidget {
               const Text(
                 'Registration requires internet. PIN login works offline after setup.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
               ),
             ],
           ),

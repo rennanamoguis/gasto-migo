@@ -12,11 +12,7 @@ class TransactionsScreen extends StatefulWidget {
   final VoidCallback? onAddTransaction;
   final VoidCallback? onChanged;
 
-  const TransactionsScreen({
-    super.key,
-    this.onAddTransaction,
-    this.onChanged,
-  });
+  const TransactionsScreen({super.key, this.onAddTransaction, this.onChanged});
 
   @override
   State<TransactionsScreen> createState() => _TransactionsScreenState();
@@ -34,12 +30,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   String selectedFilter = 'All';
 
-  final filters = const [
-    'All',
-    'Today',
-    'This Week',
-    'This Month',
-  ];
+  final filters = const ['All', 'Today', 'This Week', 'This Month'];
 
   @override
   void initState() {
@@ -174,18 +165,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Transactions'),
-        ),
+        appBar: AppBar(title: Text('Transactions')),
         body: LoadingView(message: 'Loading transactions...'),
       );
     }
 
     if (errorMessage != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Transactions'),
-        ),
+        appBar: AppBar(title: const Text('Transactions')),
         body: EmptyStateView(
           icon: Icons.error_outline_rounded,
           title: 'Unable to load transactions',
@@ -197,9 +184,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transactions'),
-      ),
+      appBar: AppBar(title: const Text('Transactions')),
       body: RefreshIndicator(
         onRefresh: loadTransactions,
         child: ListView(
@@ -221,7 +206,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: filters.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final filter = filters[index];
                   final isSelected = selectedFilter == filter;
@@ -240,8 +225,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       child: Text(
                         filter,
                         style: TextStyle(
-                          color:
-                          isSelected ? Colors.white : AppTheme.textSecondary,
+                          color: isSelected
+                              ? Colors.white
+                              : AppTheme.textSecondary,
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                         ),
@@ -283,23 +269,23 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 message: transactions.isEmpty
                     ? 'You have not recorded any expense yet.'
                     : 'No transactions match your current search or filter.',
-                actionLabel:
-                transactions.isEmpty ? 'Add Transaction' : null,
-                onActionPressed:
-                transactions.isEmpty ? widget.onAddTransaction : null,
+                actionLabel: transactions.isEmpty ? 'Add Transaction' : null,
+                onActionPressed: transactions.isEmpty
+                    ? widget.onAddTransaction
+                    : null,
               )
             else
               ...filteredTransactions.map(
-                    (transaction) => _TransactionListItem(
-                      title: _getTransactionTitle(transaction),
-                      subtitle: _getTransactionSubtitle(transaction),
-                      amount: MoneyUtils.centavosToPesoText(
-                        _readInt(transaction['total_amount']),
-                      ),
-                      itemCount: _readInt(transaction['item_count']),
-                      paymentMethod: transaction['payment_method_name']?.toString(),
-                      onTap: () => openDetails(_readInt(transaction['id'])),
-                    ),
+                (transaction) => _TransactionListItem(
+                  title: _getTransactionTitle(transaction),
+                  subtitle: _getTransactionSubtitle(transaction),
+                  amount: MoneyUtils.centavosToPesoText(
+                    _readInt(transaction['total_amount']),
+                  ),
+                  itemCount: _readInt(transaction['item_count']),
+                  paymentMethod: transaction['payment_method_name']?.toString(),
+                  onTap: () => openDetails(_readInt(transaction['id'])),
+                ),
               ),
           ],
         ),
@@ -356,8 +342,9 @@ class _TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final paymentText =
-    paymentMethod == null || paymentMethod!.isEmpty ? '' : ' • $paymentMethod';
+    final paymentText = paymentMethod == null || paymentMethod!.isEmpty
+        ? ''
+        : ' • $paymentMethod';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

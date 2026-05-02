@@ -81,18 +81,14 @@ class LookupRepository {
 
     final now = DateTime.now().toIso8601String();
 
-    return await db.insert(
-      'merchants',
-      {
-        'uuid': _uuid.v4(),
-        'name': cleanName,
-        'normalized_name': normalizedName,
-        'created_at': now,
-        'updated_at': now,
-        'sync_status': 'local',
-      },
-      conflictAlgorithm: ConflictAlgorithm.abort,
-    );
+    return await db.insert('merchants', {
+      'uuid': _uuid.v4(),
+      'name': cleanName,
+      'normalized_name': normalizedName,
+      'created_at': now,
+      'updated_at': now,
+      'sync_status': 'local',
+    }, conflictAlgorithm: ConflictAlgorithm.abort);
   }
 
   Future<int?> getDefaultAccountId() async {

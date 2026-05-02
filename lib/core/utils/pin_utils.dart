@@ -14,10 +14,7 @@ class PinUtils {
     return base64UrlEncode(values);
   }
 
-  static String hashPin({
-    required String pin,
-    required String salt,
-  }) {
+  static String hashPin({required String pin, required String salt}) {
     final bytes = utf8.encode('$salt:$pin');
     final digest = sha256.convert(bytes);
     return digest.toString();
@@ -28,10 +25,7 @@ class PinUtils {
     required String savedHash,
     required String savedSalt,
   }) {
-    final enteredHash = hashPin(
-      pin: enteredPin,
-      salt: savedSalt,
-    );
+    final enteredHash = hashPin(pin: enteredPin, salt: savedSalt);
 
     return enteredHash == savedHash;
   }

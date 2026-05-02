@@ -80,9 +80,7 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
         ),
       );
     } catch (e) {
-      showMessage(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => isLoading = false);
@@ -94,15 +92,11 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
     setState(() => isResending = true);
 
     try {
-      await authRepository.sendEmailVerificationLink(
-        email: widget.email,
-      );
+      await authRepository.sendEmailVerificationLink(email: widget.email);
 
       showMessage('Verification link sent again.');
     } catch (e) {
-      showMessage(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => isResending = false);
@@ -111,11 +105,9 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
   }
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -128,9 +120,7 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: const Text('Check Your Email'),
-      ),
+      appBar: AppBar(title: const Text('Check Your Email')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -192,13 +182,13 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
             onPressed: isLoading ? null : completeVerification,
             child: isLoading
                 ? const SizedBox(
-              height: 22,
-              width: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Text('Continue'),
           ),
 
