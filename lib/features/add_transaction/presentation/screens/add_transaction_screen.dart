@@ -13,6 +13,9 @@ import '../../../../models/payment_method_model.dart';
 import '../../../../repositories/lookup_repository.dart';
 import '../../../../repositories/transaction_repository.dart';
 import '../models/transaction_item_form.dart';
+import '../../../../core/utils/app_format_utils.dart';
+import '../../../../models/app_preferences.dart';
+import '../../../../features/settings/data/settings_repository.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final VoidCallback? onTransactionSaved;
@@ -29,6 +32,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   final lookupRepository = LookupRepository();
   final transactionRepository = TransactionRepository();
+
+  final settingsRepository = SettingsRepository();
+
+  AppPreferences preferences = AppPreferences.defaults();
 
   final uuid = const Uuid();
 
@@ -78,6 +85,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       final loadedCategories = await lookupRepository.getCategories();
       final loadedPaymentMethods = await lookupRepository.getPaymentMethods();
       final loadedAccounts = await lookupRepository.getAccounts();
+      final loadedPreferences = await settingsRepository.getPreferences();
 
       final defaultPaymentMethodId = await lookupRepository
           .getDefaultPaymentMethodId();
@@ -86,6 +94,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       if (!mounted) return;
 
       setState(() {
+        preferences = loadedPreferences;
         categories = loadedCategories;
         paymentMethods = loadedPaymentMethods;
         accounts = loadedAccounts;
@@ -335,7 +344,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     Expanded(
                       child: _PickerCard(
                         label: 'Date',
-                        value: transactionDate,
+                        value: AppFormatUtils.formatDate(
+                          transactionDate,
+                          dateFormat: preferences.dateFormat,
+                        ),
                         icon: Icons.calendar_today_rounded,
                         onTap: pickDate,
                       ),
@@ -344,7 +356,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     Expanded(
                       child: _PickerCard(
                         label: 'Time',
-                        value: transactionTime,
+                        value: AppFormatUtils.formatTime(
+                          transactionTime,
+                          timeFormat: preferences.timeFormat,
+                        ),
                         icon: Icons.access_time_rounded,
                         onTap: pickTime,
                       ),
@@ -487,22 +502,34 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               children: [
                 _SummaryRow(
                   label: 'Subtotal',
-                  amount: MoneyUtils.centavosToPesoText(subtotalAmount),
+                  amount: MoneyUtils.formatAmount(
+                    subtotalAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _SummaryRow(
                   label: 'Item Discounts',
-                  amount: MoneyUtils.centavosToPesoText(discountAmount),
+                  amount: MoneyUtils.formatAmount(
+                    discountAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _SummaryRow(
                   label: 'Item Tax',
-                  amount: MoneyUtils.centavosToPesoText(taxAmount),
+                  amount: MoneyUtils.formatAmount(
+                    taxAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                 ),
                 const Divider(height: 24),
                 _SummaryRow(
                   label: 'Total (${items.length} items)',
-                  amount: MoneyUtils.centavosToPesoText(totalAmount),
+                  amount: MoneyUtils.formatAmount(
+                    totalAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                   isTotal: true,
                 ),
               ],

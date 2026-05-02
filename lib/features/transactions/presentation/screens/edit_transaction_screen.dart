@@ -14,6 +14,9 @@ import '../../../../models/payment_method_model.dart';
 import '../../../../repositories/lookup_repository.dart';
 import '../../../../repositories/transaction_repository.dart';
 import '../../../add_transaction/presentation/models/transaction_item_form.dart';
+import '../../../../core/utils/app_format_utils.dart';
+import '../../../../models/app_preferences.dart';
+import '../../../../features/settings/data/settings_repository.dart';
 
 class EditTransactionScreen extends StatefulWidget {
   final int transactionId;
@@ -86,8 +89,9 @@ class _PickerCard extends StatelessWidget {
 class _EditableItemRow extends StatelessWidget {
   final TransactionItemForm item;
   final VoidCallback onRemove;
+  final String currencySymbol;
 
-  const _EditableItemRow({required this.item, required this.onRemove});
+  const _EditableItemRow({required this.item, required this.onRemove, required this.currencySymbol});
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +116,10 @@ class _EditableItemRow extends StatelessWidget {
               ),
               const SizedBox(height: 3),
               Text(
-                '${item.quantity} ${item.unit} x ${MoneyUtils.centavosToPesoText(item.unitPriceAmount)}',
+                '${item.quantity} ${item.unit} x ${MoneyUtils.formatAmount(
+                  item.unitPriceAmount,
+                  currencySymbol: currencySymbol,
+                )}',
                 style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
@@ -122,7 +129,10 @@ class _EditableItemRow extends StatelessWidget {
           ),
         ),
         Text(
-          MoneyUtils.centavosToPesoText(item.subtotalAmount),
+          MoneyUtils.formatAmount(
+            item.subtotalAmount,
+            currencySymbol: currencySymbol,
+          ),
           style: const TextStyle(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w900,
@@ -176,8 +186,9 @@ class _SummaryRow extends StatelessWidget {
 
 class _EditAddItemSheet extends StatefulWidget {
   final List<CategoryModel> categories;
+  final String currencySymbol;
 
-  const _EditAddItemSheet({required this.categories});
+  const _EditAddItemSheet({required this.categories, required this.currencySymbol});
 
   @override
   State<_EditAddItemSheet> createState() => _EditAddItemSheetState();
@@ -374,10 +385,10 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Unit Price',
-                  prefixText: '₱ ',
-                  prefixIcon: Icon(Icons.payments_rounded),
+                  prefixText: '${widget.currencySymbol} ',
+                  prefixIcon: const Icon(Icons.payments_rounded),
                 ),
                 onChanged: (_) => setState(() {}),
               ),
@@ -390,9 +401,9 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Discount',
-                        prefixText: '₱ ',
+                        prefixText: '${widget.currencySymbol} ',
                       ),
                       onChanged: (_) => setState(() {}),
                     ),
@@ -404,9 +415,9 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Tax',
-                        prefixText: '₱ ',
+                        prefixText: '${widget.currencySymbol} ',
                       ),
                       onChanged: (_) => setState(() {}),
                     ),
@@ -435,7 +446,10 @@ class _EditAddItemSheetState extends State<_EditAddItemSheet> {
                       ),
                     ),
                     Text(
-                      MoneyUtils.centavosToPesoText(subtotalAmount),
+                      MoneyUtils.formatAmount(
+                        subtotalAmount,
+                        currencySymbol: widget.currencySymbol,
+                      ),
                       style: const TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 18,
@@ -466,7 +480,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
 
   final lookupRepository = LookupRepository();
   final transactionRepository = TransactionRepository();
+  final settingsRepository = SettingsRepository();
   final uuid = const Uuid();
+
+  AppPreferences preferences = AppPreferences.defaults();
 
   bool isLoading = true;
   bool isSaving = false;
@@ -513,6 +530,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     });
 
     try {
+      final loadedPreferences = await settingsRepository.getPreferences();
+
       final loadedCategories = await lookupRepository.getCategories();
       final loadedPaymentMethods = await lookupRepository.getPaymentMethods();
       final loadedAccounts = await lookupRepository.getAccounts();
@@ -550,6 +569,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       if (!mounted) return;
 
       setState(() {
+        preferences = loadedPreferences;
         categories = loadedCategories;
         paymentMethods = loadedPaymentMethods;
         accounts = loadedAccounts;
@@ -626,7 +646,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return _EditAddItemSheet(categories: categories);
+        return _EditAddItemSheet(
+          categories: categories,
+          currencySymbol: preferences.currencySymbol,
+        );
       },
     );
 
@@ -807,7 +830,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                     Expanded(
                       child: _PickerCard(
                         label: 'Date',
-                        value: transactionDate,
+                        value: AppFormatUtils.formatDate(
+                          transactionDate,
+                          dateFormat: preferences.dateFormat,
+                        ),
                         icon: Icons.calendar_today_rounded,
                         onTap: pickDate,
                       ),
@@ -816,7 +842,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                     Expanded(
                       child: _PickerCard(
                         label: 'Time',
-                        value: transactionTime,
+                        value: AppFormatUtils.formatTime(
+                          transactionTime,
+                          timeFormat: preferences.timeFormat,
+                        ),
                         icon: Icons.access_time_rounded,
                         onTap: pickTime,
                       ),
@@ -907,6 +936,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                 for (int index = 0; index < items.length; index++) ...[
                   _EditableItemRow(
                     item: items[index],
+                    currencySymbol: preferences.currencySymbol,
                     onRemove: () => removeItem(index),
                   ),
                   if (index != items.length - 1) const Divider(height: 20),
@@ -922,22 +952,34 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
               children: [
                 _SummaryRow(
                   label: 'Subtotal',
-                  amount: MoneyUtils.centavosToPesoText(subtotalAmount),
+                  amount: MoneyUtils.formatAmount(
+                    subtotalAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _SummaryRow(
                   label: 'Item Discounts',
-                  amount: MoneyUtils.centavosToPesoText(discountAmount),
+                  amount: MoneyUtils.formatAmount(
+                    discountAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _SummaryRow(
                   label: 'Item Tax',
-                  amount: MoneyUtils.centavosToPesoText(taxAmount),
+                  amount: MoneyUtils.formatAmount(
+                    taxAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                 ),
                 const Divider(height: 24),
                 _SummaryRow(
                   label: 'Total (${items.length} items)',
-                  amount: MoneyUtils.centavosToPesoText(totalAmount),
+                  amount: MoneyUtils.formatAmount(
+                    totalAmount,
+                    currencySymbol: preferences.currencySymbol,
+                  ),
                   isTotal: true,
                 ),
               ],

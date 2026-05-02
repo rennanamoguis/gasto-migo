@@ -66,6 +66,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         content: Text('Currency set to ${currency['code']}.'),
       ),
     );
+    Navigator.pop(context, true);
   }
 
   @override

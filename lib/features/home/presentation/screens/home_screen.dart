@@ -7,6 +7,9 @@ import '../../../../core/widgets/empty_state_view.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../repositories/transaction_repository.dart';
 import '../../../transactions/presentation/screens/transaction_details_screen.dart';
+import '../../../../core/utils/app_format_utils.dart';
+import '../../../../models/app_preferences.dart';
+import '../../../../features/settings/data/settings_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onViewAllTransactions;
@@ -26,6 +29,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final transactionRepository = TransactionRepository();
+  final settingsRepository = SettingsRepository();
+
+  AppPreferences preferences = AppPreferences.defaults();
 
   bool isLoading = true;
   String? errorMessage;
@@ -68,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final today = await transactionRepository.getTodayTotal();
       final week = await transactionRepository.getWeekTotal();
       final month = await transactionRepository.getMonthTotal();
+      final loadedPreferences = await settingsRepository.getPreferences();
       final recent = await transactionRepository.getRecentTransactions(
         limit: 5,
       );
@@ -79,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         weekTotal = week;
         monthTotal = month;
         recentTransactions = recent;
+        preferences = loadedPreferences;
         isLoading = false;
       });
     } catch (e) {
@@ -142,7 +150,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _AmountBlock(
                     label: 'Today',
-                    amount: MoneyUtils.centavosToPesoText(todayTotal),
+                    amount: MoneyUtils.formatAmount(
+                      todayTotal,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                     large: true,
                   ),
                   Container(
@@ -170,7 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: AppCard(
                     child: _AmountBlock(
                       label: 'This Week',
-                      amount: MoneyUtils.centavosToPesoText(weekTotal),
+                      amount: MoneyUtils.formatAmount(
+                        weekTotal,
+                        currencySymbol: preferences.currencySymbol,
+                      ),
                     ),
                   ),
                 ),
@@ -179,7 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: AppCard(
                     child: _AmountBlock(
                       label: 'This Month',
-                      amount: MoneyUtils.centavosToPesoText(monthTotal),
+                      amount: MoneyUtils.formatAmount(
+                        monthTotal,
+                        currencySymbol: preferences.currencySymbol,
+                      ),
                     ),
                   ),
                 ),
@@ -250,8 +267,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 (transaction) => _TransactionPreviewTile(
                   title: _getTransactionTitle(transaction),
                   subtitle: _getTransactionSubtitle(transaction),
-                  amount: MoneyUtils.centavosToPesoText(
+                  amount: MoneyUtils.formatAmount(
                     _readInt(transaction['total_amount']),
+                    currencySymbol: preferences.currencySymbol,
                   ),
                   itemCount: _readInt(transaction['item_count']),
                   onTap: () => openDetails(_readInt(transaction['id'])),
@@ -278,11 +296,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final date = transaction['transaction_date']?.toString() ?? '';
     final time = transaction['transaction_time']?.toString();
 
-    if (time == null || time.isEmpty) {
-      return date;
-    }
-
-    return '$date, $time';
+    return AppFormatUtils.formatDateTime(
+      date: date,
+      time: time,
+      dateFormat: preferences.dateFormat,
+      timeFormat: preferences.timeFormat,
+    );
   }
 
   int _readInt(dynamic value) {

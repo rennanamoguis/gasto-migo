@@ -226,6 +226,20 @@ class DatabaseSchema {
       'updated_at': now,
     });
 
+    await db.insert('app_meta', {
+      'key': 'date_format',
+      'value': 'MMM dd, yyyy',
+      'created_at': now,
+      'updated_at': now,
+    });
+
+    await db.insert('app_meta', {
+      'key': 'time_format',
+      'value': '12h',
+      'created_at': now,
+      'updated_at': now,
+    });
+
     final categories = [
       {
         'uuid': 'cat-food-dining',

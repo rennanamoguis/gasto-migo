@@ -7,10 +7,14 @@ import '../../../../core/widgets/empty_state_view.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../repositories/transaction_repository.dart';
 import 'transaction_details_screen.dart';
+import '../../../../core/utils/app_format_utils.dart';
+import '../../../../models/app_preferences.dart';
+import '../../../../features/settings/data/settings_repository.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final VoidCallback? onAddTransaction;
   final VoidCallback? onChanged;
+
 
   const TransactionsScreen({super.key, this.onAddTransaction, this.onChanged});
 
@@ -21,6 +25,9 @@ class TransactionsScreen extends StatefulWidget {
 class _TransactionsScreenState extends State<TransactionsScreen> {
   final transactionRepository = TransactionRepository();
   final searchController = TextEditingController();
+  final settingsRepository = SettingsRepository();
+
+  AppPreferences preferences = AppPreferences.defaults();
 
   bool isLoading = true;
   String? errorMessage;
@@ -64,11 +71,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
     try {
       final result = await transactionRepository.getTransactions();
+      final loadedPreferences = await settingsRepository.getPreferences();
 
       if (!mounted) return;
 
       setState(() {
         transactions = result;
+        preferences = loadedPreferences;
         isLoading = false;
       });
 
@@ -279,8 +288,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 (transaction) => _TransactionListItem(
                   title: _getTransactionTitle(transaction),
                   subtitle: _getTransactionSubtitle(transaction),
-                  amount: MoneyUtils.centavosToPesoText(
+                  amount: MoneyUtils.formatAmount(
                     _readInt(transaction['total_amount']),
+                    currencySymbol: preferences.currencySymbol,
                   ),
                   itemCount: _readInt(transaction['item_count']),
                   paymentMethod: transaction['payment_method_name']?.toString(),
@@ -308,11 +318,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final date = transaction['transaction_date']?.toString() ?? '';
     final time = transaction['transaction_time']?.toString();
 
-    if (time == null || time.isEmpty) {
-      return date;
-    }
-
-    return '$date, $time';
+    return AppFormatUtils.formatDateTime(
+      date: date,
+      time: time,
+      dateFormat: preferences.dateFormat,
+      timeFormat: preferences.timeFormat,
+    );
   }
 
   int _readInt(dynamic value) {

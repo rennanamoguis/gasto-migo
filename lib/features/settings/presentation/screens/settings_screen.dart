@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/presentation/screens/get_started_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../data/settings_repository.dart';
 
 import 'about_screen.dart';
 import 'accounts_screen.dart';
@@ -15,8 +16,38 @@ import 'currency_screen.dart';
 import 'merchants_screen.dart';
 import 'payment_methods_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class SettingsScreen extends StatefulWidget {
+  final VoidCallback? onSettingsChanged;
+
+  const SettingsScreen({
+    super.key,
+    this.onSettingsChanged,
+  });
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen>{
+  final settingsRepository = SettingsRepository();
+  String currencyCode = 'PHP';
+  String currencySymbol = '₱';
+
+  @override
+  void initState() {
+    super.initState();
+    loadSettingsSummary();
+  }
+
+  Future<void> loadSettingsSummary() async {
+    final preferences = await settingsRepository.getPreferences();
+    if (!mounted) return;
+    setState(() {
+      currencyCode = preferences.currencyCode;
+      currencySymbol = preferences.currencySymbol;
+    });
+  }
+
 
   Future<void> resetAppLogin(BuildContext context) async {
     final storage = SecureStorageService();
@@ -133,12 +164,18 @@ class SettingsScreen extends StatelessWidget {
                 _SettingsTile(
                   icon: Icons.attach_money_rounded,
                   title: 'Currency',
-                  trailingText: 'Default',
-                  onTap: () {
-                    Navigator.push(
+                  trailingText: '$currencySymbol $currencyCode',
+                  onTap: () async {
+                    final result = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(builder: (_) => const CurrencyScreen()),
                     );
+
+                    if (result == true) {
+                      await loadSettingsSummary();
+
+                      widget.onSettingsChanged?.call();
+                    }
                   },
                 ),
                 Divider(),

@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/database/app_database.dart';
+import '../../../models/app_preferences.dart';
 
 class SettingsRepository {
   final _uuid = const Uuid();
@@ -19,6 +20,22 @@ class SettingsRepository {
     if (result.isEmpty) return null;
 
     return result.first['value']?.toString();
+  }
+
+  Future<AppPreferences> getPreferences() async {
+    final currencyCode = await getMetaValue('currency_code') ?? 'PHP';
+    final currencySymbol = await getMetaValue('currency_symbol') ?? '₱';
+    final currencyName = await getMetaValue('currency_name') ?? 'Philippine Peso';
+    final dateFormat = await getMetaValue('date_format') ?? 'MMM dd, yyyy';
+    final timeFormat = await getMetaValue('time_format') ?? '12h';
+
+    return AppPreferences(
+      currencyCode: currencyCode,
+      currencySymbol: currencySymbol,
+      currencyName: currencyName,
+      dateFormat: dateFormat,
+      timeFormat: timeFormat,
+    );
   }
 
   Future<void> setMetaValue(String key, String value) async {

@@ -52,7 +52,11 @@ class _AppShellState extends State<AppShell> {
           refreshData(goToTab: 0);
         },
       ),
-      const SettingsScreen(),
+      SettingsScreen(
+        onSettingsChanged: () {
+          refreshData();
+        },
+      ),
     ];
 
     return Scaffold(

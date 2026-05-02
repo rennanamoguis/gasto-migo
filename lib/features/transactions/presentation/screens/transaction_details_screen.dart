@@ -7,6 +7,9 @@ import '../../../../core/widgets/empty_state_view.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../repositories/transaction_repository.dart';
 import 'edit_transaction_screen.dart';
+import '../../../../core/utils/app_format_utils.dart';
+import '../../../../models/app_preferences.dart';
+import '../../../../features/settings/data/settings_repository.dart';
 
 class TransactionDetailsScreen extends StatefulWidget {
   final int transactionId;
@@ -25,6 +28,9 @@ class TransactionDetailsScreen extends StatefulWidget {
 
 class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   final transactionRepository = TransactionRepository();
+  final settingsRepository = SettingsRepository();
+
+  AppPreferences preferences = AppPreferences.defaults();
 
   bool isLoading = true;
   String? errorMessage;
@@ -45,10 +51,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     });
 
     try {
-      final loadedTransaction = await transactionRepository.getTransactionById(
-        widget.transactionId,
-      );
-
+      final loadedPreferences = await settingsRepository.getPreferences();
+      final loadedTransaction =
+      await transactionRepository.getTransactionById(widget.transactionId);
       final loadedItems = await transactionRepository.getItemsByTransactionId(
         widget.transactionId,
       );
@@ -57,6 +62,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
       setState(() {
         transaction = loadedTransaction;
+        preferences = loadedPreferences;
         items = loadedItems;
         isLoading = false;
       });
@@ -168,6 +174,12 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     final title = _getTransactionTitle(transaction!);
     final date = transaction!['transaction_date']?.toString() ?? '';
     final time = transaction!['transaction_time']?.toString() ?? '';
+    final formattedDateTime = AppFormatUtils.formatDateTime(
+      date: date,
+      time: time,
+      dateFormat: preferences.dateFormat,
+      timeFormat: preferences.timeFormat,
+    );
     final paymentMethod = transaction!['payment_method_name']?.toString() ?? '';
     final account = transaction!['account_name']?.toString() ?? '';
     final notes = transaction!['notes']?.toString();
@@ -214,7 +226,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    time.isEmpty ? date : '$date, $time',
+                    formattedDateTime,
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 14,
@@ -222,7 +234,10 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    MoneyUtils.centavosToPesoText(total),
+                    MoneyUtils.formatAmount(
+                      total,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                     style: const TextStyle(
                       color: AppTheme.primary,
                       fontSize: 30,
@@ -286,7 +301,10 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                 child: Column(
                   children: [
                     for (int index = 0; index < items.length; index++) ...[
-                      _ItemDetailsRow(item: items[index]),
+                      _ItemDetailsRow(
+                        item: items[index],
+                        currencySymbol: preferences.currencySymbol,
+                      ),
                       if (index != items.length - 1) const Divider(height: 22),
                     ],
                   ],
@@ -300,27 +318,42 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                 children: [
                   _SummaryRow(
                     label: 'Subtotal',
-                    amount: MoneyUtils.centavosToPesoText(subtotal),
+                    amount: MoneyUtils.formatAmount(
+                      subtotal,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   _SummaryRow(
                     label: 'Discount',
-                    amount: MoneyUtils.centavosToPesoText(discount),
+                    amount: MoneyUtils.formatAmount(
+                      discount,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   _SummaryRow(
                     label: 'Tax',
-                    amount: MoneyUtils.centavosToPesoText(tax),
+                    amount: MoneyUtils.formatAmount(
+                      tax,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   _SummaryRow(
                     label: 'Extra',
-                    amount: MoneyUtils.centavosToPesoText(extra),
+                    amount: MoneyUtils.formatAmount(
+                      extra,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                   ),
                   const Divider(height: 24),
                   _SummaryRow(
                     label: 'Total',
-                    amount: MoneyUtils.centavosToPesoText(total),
+                    amount: MoneyUtils.formatAmount(
+                      total,
+                      currencySymbol: preferences.currencySymbol,
+                    ),
                     isTotal: true,
                   ),
                 ],
@@ -400,8 +433,9 @@ class _InfoRow extends StatelessWidget {
 
 class _ItemDetailsRow extends StatelessWidget {
   final Map<String, dynamic> item;
+  final String currencySymbol;
 
-  const _ItemDetailsRow({required this.item});
+  const _ItemDetailsRow({required this.item,required this.currencySymbol});
 
   @override
   Widget build(BuildContext context) {
@@ -442,7 +476,10 @@ class _ItemDetailsRow extends StatelessWidget {
               ),
               const SizedBox(height: 3),
               Text(
-                '$quantity $unit x ${MoneyUtils.centavosToPesoText(unitPrice)}',
+                '$quantity $unit x ${MoneyUtils.formatAmount(
+                  unitPrice,
+                  currencySymbol: currencySymbol,
+                )}',
                 style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
@@ -463,7 +500,10 @@ class _ItemDetailsRow extends StatelessWidget {
           ),
         ),
         Text(
-          MoneyUtils.centavosToPesoText(subtotal),
+          MoneyUtils.formatAmount(
+            subtotal,
+            currencySymbol: currencySymbol,
+          ),
           style: const TextStyle(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w900,
