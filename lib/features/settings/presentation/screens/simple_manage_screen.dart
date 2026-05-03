@@ -62,7 +62,7 @@ class _SimpleManageScreenState extends State<SimpleManageScreen> {
 
     final result = await showDialog<String>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(item == null ? widget.addLabel : 'Edit ${widget.title}'),
           content: TextField(
@@ -74,7 +74,7 @@ class _SimpleManageScreenState extends State<SimpleManageScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cancel'),
             ),
             FilledButton(
@@ -83,7 +83,7 @@ class _SimpleManageScreenState extends State<SimpleManageScreen> {
 
                 if (value.isEmpty) return;
 
-                Navigator.pop(context, value);
+                Navigator.pop(dialogContext, value);
               },
               child: const Text('Save'),
             ),
@@ -91,8 +91,6 @@ class _SimpleManageScreenState extends State<SimpleManageScreen> {
         );
       },
     );
-
-    controller.dispose();
 
     if (result == null || result.trim().isEmpty) return;
 

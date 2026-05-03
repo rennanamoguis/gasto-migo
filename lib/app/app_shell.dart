@@ -48,6 +48,7 @@ class _AppShellState extends State<AppShell> {
         onChanged: () => refreshData(),
       ),
       AddTransactionScreen(
+        key: ValueKey('add-$refreshCounter'),
         onTransactionSaved: () {
           refreshData(goToTab: 0);
         },

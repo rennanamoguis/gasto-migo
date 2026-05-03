@@ -161,8 +161,6 @@ class _AccountsScreenState extends State<AccountsScreen> {
       },
     );
 
-    nameController.dispose();
-
     if (result == null) return;
 
     await repository.saveAccount(

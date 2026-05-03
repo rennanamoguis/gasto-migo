@@ -109,44 +109,52 @@ class _SettingsScreenState extends State<SettingsScreen>{
                 _SettingsTile(
                   icon: Icons.category_rounded,
                   title: 'Categories',
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const CategoriesScreen()),
                     );
+
+                    widget.onSettingsChanged?.call();
                   },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.payment_rounded,
                   title: 'Payment Methods',
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
                     );
+
+                    widget.onSettingsChanged?.call();
                   },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.account_balance_wallet_rounded,
                   title: 'Accounts',
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const AccountsScreen()),
                     );
+
+                    widget.onSettingsChanged?.call();
                   },
                 ),
                 Divider(),
                 _SettingsTile(
                   icon: Icons.storefront_rounded,
                   title: 'Merchants',
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const MerchantsScreen()),
                     );
+
+                    widget.onSettingsChanged?.call();
                   },
                 ),
               ],

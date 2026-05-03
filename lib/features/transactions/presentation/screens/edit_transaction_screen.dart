@@ -483,6 +483,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   final settingsRepository = SettingsRepository();
   final uuid = const Uuid();
 
+  List<Map<String, dynamic>> merchants = [];
+
   AppPreferences preferences = AppPreferences.defaults();
 
   bool isLoading = true;
@@ -535,6 +537,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       final loadedCategories = await lookupRepository.getCategories();
       final loadedPaymentMethods = await lookupRepository.getPaymentMethods();
       final loadedAccounts = await lookupRepository.getAccounts();
+      final loadedMerchants = await lookupRepository.getMerchants();
 
       final transaction = await transactionRepository.getTransactionById(
         widget.transactionId,
@@ -582,6 +585,13 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
 
         transactionDate = transaction['transaction_date']?.toString() ?? '';
         transactionTime = transaction['transaction_time']?.toString() ?? '';
+
+        merchants = loadedMerchants.map((merchant) {
+          return {
+            'id': merchant.id,
+            'name': merchant.name,
+          };
+        }).toList();
 
         items = mappedItems;
         isLoading = false;
@@ -817,12 +827,9 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
           AppCard(
             child: Column(
               children: [
-                TextField(
+                _EditMerchantAutocompleteField(
                   controller: merchantController,
-                  decoration: const InputDecoration(
-                    labelText: 'Merchant / Store',
-                    prefixIcon: Icon(Icons.storefront_rounded),
-                  ),
+                  merchants: merchants,
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -1014,5 +1021,122 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     if (value is int) return value;
     if (value is num) return value.toInt();
     return int.tryParse(value.toString()) ?? 0;
+  }
+}
+
+class _EditMerchantAutocompleteField extends StatefulWidget {
+  final TextEditingController controller;
+  final List<Map<String, dynamic>> merchants;
+
+  const _EditMerchantAutocompleteField({
+    required this.controller,
+    required this.merchants,
+  });
+
+  @override
+  State<_EditMerchantAutocompleteField> createState() =>
+      _EditMerchantAutocompleteFieldState();
+}
+
+class _EditMerchantAutocompleteFieldState
+    extends State<_EditMerchantAutocompleteField> {
+  late final FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RawAutocomplete<Map<String, dynamic>>(
+      textEditingController: widget.controller,
+      focusNode: focusNode,
+      displayStringForOption: (option) {
+        return option['name']?.toString() ?? '';
+      },
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        final query = textEditingValue.text.trim().toLowerCase();
+
+        if (widget.merchants.isEmpty) {
+          return const Iterable<Map<String, dynamic>>.empty();
+        }
+
+        if (query.isEmpty) {
+          return widget.merchants.take(8);
+        }
+
+        return widget.merchants.where((merchant) {
+          final name = merchant['name']?.toString().toLowerCase() ?? '';
+          return name.contains(query);
+        }).take(8);
+      },
+      onSelected: (merchant) {
+        widget.controller.text = merchant['name']?.toString() ?? '';
+      },
+      fieldViewBuilder: (
+          context,
+          textEditingController,
+          focusNode,
+          onFieldSubmitted,
+          ) {
+        return TextField(
+          controller: textEditingController,
+          focusNode: focusNode,
+          textInputAction: TextInputAction.next,
+          decoration: const InputDecoration(
+            labelText: 'Merchant / Store',
+            hintText: 'Type or select merchant',
+            prefixIcon: Icon(Icons.storefront_rounded),
+          ),
+        );
+      },
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 6,
+            borderRadius: BorderRadius.circular(14),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxHeight: 240,
+                maxWidth: 340,
+              ),
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: options.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final option = options.elementAt(index);
+                  final name = option['name']?.toString() ?? '';
+
+                  return ListTile(
+                    leading: const Icon(
+                      Icons.storefront_rounded,
+                      color: AppTheme.primary,
+                    ),
+                    title: Text(
+                      name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    onTap: () => onSelected(option),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
