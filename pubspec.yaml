@@ -105,7 +105,7 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/gasto_migo.png"
+  image_path: "assets/images/logo_gasto_migo.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/gasto_migo.png"
+  adaptive_icon_foreground: "assets/images/logo_gasto_migo.png"
