@@ -61,35 +61,146 @@ class _AppShellState extends State<AppShell> {
     ];
 
     return Scaffold(
-      body: IndexedStack(index: selectedIndex, children: screens),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppTheme.surface,
-          border: Border(top: BorderSide(color: AppTheme.border)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: BottomNavigationBar(
-            currentIndex: selectedIndex,
+      extendBody: true,
+      body: IndexedStack(
+        index: selectedIndex,
+        children: screens,
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: BubbleBottomNav(
+            selectedIndex: selectedIndex,
             onTap: onTabSelected,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
-                label: 'Home',
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BubbleBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  const BubbleBottomNav({
+    super.key,
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  static const items = [
+    _BubbleNavItem(
+      icon: Icons.home_rounded,
+      label: 'Home',
+    ),
+    _BubbleNavItem(
+      icon: Icons.receipt_long_rounded,
+      label: 'Transactions',
+    ),
+    _BubbleNavItem(
+      icon: Icons.add_rounded,
+      label: 'Add',
+    ),
+    _BubbleNavItem(
+      icon: Icons.settings_rounded,
+      label: 'Settings',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 72,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: AppTheme.border,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.10),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          final isSelected = selectedIndex == index;
+
+          return Expanded(
+            child: _BubbleNavButton(
+              icon: item.icon,
+              label: item.label,
+              isSelected: isSelected,
+              onTap: () => onTap(index),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class _BubbleNavItem {
+  final IconData icon;
+  final String label;
+
+  const _BubbleNavItem({
+    required this.icon,
+    required this.label,
+  });
+}
+
+class _BubbleNavButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _BubbleNavButton({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: label,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: onTap,
+        child: SizedBox(
+          height: 58,
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+              height: isSelected ? 46 : 42,
+              width: isSelected ? 46 : 42,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppTheme.primaryContainer
+                    : Colors.transparent,
+                shape: BoxShape.circle,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long_rounded),
-                label: 'Transactions',
+              child: Icon(
+                icon,
+                size: isSelected ? 25 : 23,
+                color: isSelected
+                    ? AppTheme.primary
+                    : AppTheme.textPrimary,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.add_circle_outline_rounded),
-                label: 'Add',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings_rounded),
-                label: 'Settings',
-              ),
-            ],
+            ),
           ),
         ),
       ),

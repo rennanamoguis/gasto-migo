@@ -210,7 +210,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       body: RefreshIndicator(
         onRefresh: loadDetails,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
           children: [
             AppCard(
               child: Column(

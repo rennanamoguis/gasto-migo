@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onRefresh: loadDashboard,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
           children: [
             const Text(
               'Good morning!',
