@@ -38,21 +38,24 @@ class _AppShellState extends State<AppShell> {
     final screens = [
       HomeScreen(
         key: ValueKey('home-$refreshCounter'),
-        onViewAllTransactions: () => onTabSelected(1),
-        onAddTransaction: () => onTabSelected(2),
+        onViewAllTransactions: () => onTabSelected(2),
+        onAddTransaction: () => onTabSelected(1),
         onChanged: () => refreshData(),
       ),
-      TransactionsScreen(
-        key: ValueKey('transactions-$refreshCounter'),
-        onAddTransaction: () => onTabSelected(2),
-        onChanged: () => refreshData(),
-      ),
+
       AddTransactionScreen(
         key: ValueKey('add-$refreshCounter'),
         onTransactionSaved: () {
           refreshData(goToTab: 0);
         },
       ),
+
+      TransactionsScreen(
+        key: ValueKey('transactions-$refreshCounter'),
+        onAddTransaction: () => onTabSelected(1),
+        onChanged: () => refreshData(),
+      ),
+
       SettingsScreen(
         onSettingsChanged: () {
           refreshData();
@@ -96,12 +99,12 @@ class BubbleBottomNav extends StatelessWidget {
       label: 'Home',
     ),
     _BubbleNavItem(
-      icon: Icons.receipt_long_rounded,
-      label: 'Transactions',
-    ),
-    _BubbleNavItem(
       icon: Icons.add_rounded,
       label: 'Add',
+    ),
+    _BubbleNavItem(
+      icon: Icons.receipt_long_rounded,
+      label: 'Transactions',
     ),
     _BubbleNavItem(
       icon: Icons.settings_rounded,
