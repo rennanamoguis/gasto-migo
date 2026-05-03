@@ -122,160 +122,181 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('GastoMigo')),
-      body: RefreshIndicator(
-        onRefresh: loadDashboard,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-          children: [
-            const Text(
-              'Good morning!',
-              style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Here’s your spending overview',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-
-            AppCard(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _AmountBlock(
-                    label: 'Today',
-                    amount: MoneyUtils.formatAmount(
-                      todayTotal,
-                      currencySymbol: preferences.currencySymbol,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: loadDashboard,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: SizedBox(
+                    height: 110,
+                    width: 110,
+                    child: Image.asset(
+                      'assets/images/gasto_migo_logo.png',
+                      fit: BoxFit.contain,
                     ),
-                    large: true,
                   ),
-                  Container(
-                    height: 42,
-                    width: 42,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+
+              const Text(
+                'Good morning!',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              const Text(
+                'Here’s your spending overview',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              AppCard(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _AmountBlock(
+                      label: 'Today',
+                      amount: MoneyUtils.formatAmount(
+                        todayTotal,
+                        currencySymbol: preferences.currencySymbol,
+                      ),
+                      large: true,
                     ),
-                    child: const Icon(
-                      Icons.calendar_today_rounded,
-                      color: AppTheme.primary,
-                      size: 20,
+                    Container(
+                      height: 42,
+                      width: 42,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.calendar_today_rounded,
+                        color: AppTheme.primary,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: AppCard(
+                      child: _AmountBlock(
+                        label: 'This Week',
+                        amount: MoneyUtils.formatAmount(
+                          weekTotal,
+                          currencySymbol: preferences.currencySymbol,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: AppCard(
+                      child: _AmountBlock(
+                        label: 'This Month',
+                        amount: MoneyUtils.formatAmount(
+                          monthTotal,
+                          currencySymbol: preferences.currencySymbol,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 24),
 
-            Row(
-              children: [
-                Expanded(
-                  child: AppCard(
-                    child: _AmountBlock(
-                      label: 'This Week',
-                      amount: MoneyUtils.formatAmount(
-                        weekTotal,
-                        currencySymbol: preferences.currencySymbol,
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Recent Transactions',
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppCard(
-                    child: _AmountBlock(
-                      label: 'This Month',
-                      amount: MoneyUtils.formatAmount(
-                        monthTotal,
-                        currencySymbol: preferences.currencySymbol,
-                      ),
-                    ),
+                  TextButton(
+                    onPressed: widget.onViewAllTransactions,
+                    child: const Text('View all'),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Recent Transactions',
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                TextButton(
-                  onPressed: widget.onViewAllTransactions,
-                  child: const Text('View all'),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            if (recentTransactions.isEmpty)
-              AppCard(
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.receipt_long_rounded,
-                      color: AppTheme.primary,
-                      size: 46,
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'No transactions yet',
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Add your first expense transaction to see it here.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 13,
-                      ),
-                    ),
-                    if (widget.onAddTransaction != null) ...[
-                      const SizedBox(height: 16),
-                      FilledButton(
-                        onPressed: widget.onAddTransaction,
-                        child: const Text('Add Transaction'),
-                      ),
-                    ],
-                  ],
-                ),
-              )
-            else
-              ...recentTransactions.map(
-                (transaction) => _TransactionPreviewTile(
-                  title: _getTransactionTitle(transaction),
-                  subtitle: _getTransactionSubtitle(transaction),
-                  amount: MoneyUtils.formatAmount(
-                    _readInt(transaction['total_amount']),
-                    currencySymbol: preferences.currencySymbol,
-                  ),
-                  itemCount: _readInt(transaction['item_count']),
-                  onTap: () => openDetails(_readInt(transaction['id'])),
-                ),
+                ],
               ),
-          ],
+
+              const SizedBox(height: 8),
+
+              if (recentTransactions.isEmpty)
+                AppCard(
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.receipt_long_rounded,
+                        color: AppTheme.primary,
+                        size: 46,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'No transactions yet',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Add your first expense transaction to see it here.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                      if (widget.onAddTransaction != null) ...[
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: widget.onAddTransaction,
+                          child: const Text('Add Transaction'),
+                        ),
+                      ],
+                    ],
+                  ),
+                )
+              else
+                ...recentTransactions.map(
+                      (transaction) => _TransactionPreviewTile(
+                    title: _getTransactionTitle(transaction),
+                    subtitle: _getTransactionSubtitle(transaction),
+                    amount: MoneyUtils.formatAmount(
+                      _readInt(transaction['total_amount']),
+                      currencySymbol: preferences.currencySymbol,
+                    ),
+                    itemCount: _readInt(transaction['item_count']),
+                    onTap: () => openDetails(_readInt(transaction['id'])),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

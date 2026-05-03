@@ -14,7 +14,7 @@ class GastoMigoApp extends StatelessWidget {
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const AppShell(),
+      home: const SplashScreen(),
     );
   }
 }

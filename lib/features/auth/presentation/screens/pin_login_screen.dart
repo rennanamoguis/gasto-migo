@@ -91,27 +91,16 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            const SizedBox(height: 80),
+            const SizedBox(height: 70),
 
-            Container(
-              height: 88,
-              width: 88,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppTheme.primary,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primary.withOpacity(0.18),
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.lock_rounded,
-                color: Colors.white,
-                size: 48,
+            Center(
+              child: SizedBox(
+                height: 150,
+                width: 150,
+                child: Image.asset(
+                  'assets/images/gasto_migo_logo.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
 
@@ -132,7 +121,10 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
             const Text(
               'Enter your 6-digit PIN to continue.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+              ),
             ),
 
             const SizedBox(height: 32),
@@ -156,7 +148,10 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
             const SizedBox(height: 24),
 
-            FilledButton(onPressed: login, child: const Text('Unlock')),
+            FilledButton(
+              onPressed: login,
+              child: const Text('Unlock'),
+            ),
           ],
         ),
       ),
