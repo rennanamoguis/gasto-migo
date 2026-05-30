@@ -9,6 +9,9 @@ class SecureStorageService {
   static const _keyPinHash = 'pin_hash';
   static const _keyPinSalt = 'pin_salt';
 
+  static const _keyPendingFullName = 'pending_full_name';
+  static const _keyPendingEmail = 'pending_email';
+
   Future<void> saveUser({
     required String firebaseUid,
     required String fullName,
@@ -28,23 +31,23 @@ class SecureStorageService {
   }
 
   Future<String?> getFirebaseUid() async {
-    return await _storage.read(key: _keyFirebaseUid);
+    return _storage.read(key: _keyFirebaseUid);
   }
 
   Future<String?> getFullName() async {
-    return await _storage.read(key: _keyFullName);
+    return _storage.read(key: _keyFullName);
   }
 
   Future<String?> getEmail() async {
-    return await _storage.read(key: _keyEmail);
+    return _storage.read(key: _keyEmail);
   }
 
   Future<String?> getPinHash() async {
-    return await _storage.read(key: _keyPinHash);
+    return _storage.read(key: _keyPinHash);
   }
 
   Future<String?> getPinSalt() async {
-    return await _storage.read(key: _keyPinSalt);
+    return _storage.read(key: _keyPinSalt);
   }
 
   Future<bool> hasPinEnrolled() async {
@@ -55,6 +58,34 @@ class SecureStorageService {
         pinHash.isNotEmpty &&
         pinSalt != null &&
         pinSalt.isNotEmpty;
+  }
+
+  Future<void> savePendingRegistration({
+    required String fullName,
+    required String email,
+  }) async {
+    await _storage.write(
+      key: _keyPendingFullName,
+      value: fullName.trim(),
+    );
+
+    await _storage.write(
+      key: _keyPendingEmail,
+      value: email.trim().toLowerCase(),
+    );
+  }
+
+  Future<String?> getPendingFullName() async {
+    return _storage.read(key: _keyPendingFullName);
+  }
+
+  Future<String?> getPendingEmail() async {
+    return _storage.read(key: _keyPendingEmail);
+  }
+
+  Future<void> clearPendingRegistration() async {
+    await _storage.delete(key: _keyPendingFullName);
+    await _storage.delete(key: _keyPendingEmail);
   }
 
   Future<void> clearAll() async {

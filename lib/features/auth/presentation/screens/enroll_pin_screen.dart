@@ -51,7 +51,9 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
       final salt = PinUtils.generateSalt();
       final hash = PinUtils.hashPin(pin: pin, salt: salt);
 
-      await authRepository.completePinEnrollmentOnServer();
+      await authRepository.completePinEnrollmentOnServer(
+        email: widget.email,
+      );
 
       await storage.saveUser(
         firebaseUid: widget.firebaseUid,

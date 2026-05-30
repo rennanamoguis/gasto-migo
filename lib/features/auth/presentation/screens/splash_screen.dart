@@ -31,12 +31,16 @@ class _SplashScreenState extends State<SplashScreen> {
     if (hasPin) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const PinLoginScreen()),
+        MaterialPageRoute(
+          builder: (_) => const PinLoginScreen(),
+        ),
       );
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const GetStartedScreen()),
+        MaterialPageRoute(
+          builder: (_) => const GetStartedScreen(),
+        ),
       );
     }
   }

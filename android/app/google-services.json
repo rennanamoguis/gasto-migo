@@ -12,7 +12,12 @@
           "package_name": "com.app.gastomigo.gastomigo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCGyG1RBO5H-5jLdU6znqdN5MR0o6moqXs"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332340934159-kfiahudmg5b7ruj9319k32vukb8vmi06.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.gastomigo.gastomigo"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +48,20 @@
           "package_name": "com.application.gastomigo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "332340934159-823uvl540ti3018tj00e0orpjsvi3hnj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.application.gastomigo",
+            "certificate_hash": "beba14fcacb802ef49bccb3febeb19a1db7fec0e"
+          }
+        },
+        {
+          "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCGyG1RBO5H-5jLdU6znqdN5MR0o6moqXs"
@@ -39,7 +69,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332340934159-kfiahudmg5b7ruj9319k32vukb8vmi06.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.gastomigo.gastomigo"
+              }
+            }
+          ]
         }
       }
     }

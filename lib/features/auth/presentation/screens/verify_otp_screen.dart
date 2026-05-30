@@ -5,22 +5,22 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../repositories/auth_repository.dart';
 import 'enroll_pin_screen.dart';
 
-class CheckEmailScreen extends StatefulWidget {
+class VerifyOtpScreen extends StatefulWidget {
   final String fullName;
   final String email;
 
-  const CheckEmailScreen({
+  const VerifyOtpScreen({
     super.key,
     required this.fullName,
     required this.email,
   });
 
   @override
-  State<CheckEmailScreen> createState() => _CheckEmailScreenState();
+  State<VerifyOtpScreen> createState() => _VerifyOtpScreenState();
 }
 
-class _CheckEmailScreenState extends State<CheckEmailScreen> {
-  final linkController = TextEditingController();
+class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
+  final otpController = TextEditingController();
 
   final authRepository = AuthRepository();
   final storage = SecureStorageService();
@@ -28,43 +28,32 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
   bool isLoading = false;
   bool isResending = false;
 
-  Future<void> completeVerification() async {
-    final link = linkController.text.trim();
+  Future<void> verifyOtp() async {
+    final otp = otpController.text.trim();
 
-    if (link.isEmpty) {
-      showMessage('Please paste the verification link from your email.');
-      return;
-    }
-
-    if (!authRepository.isSignInWithEmailLink(link)) {
-      showMessage('Invalid Firebase verification link.');
+    if (otp.length != 6) {
+      showMessage('Please enter the 6-digit verification code.');
       return;
     }
 
     setState(() => isLoading = true);
 
     try {
-      final credential = await authRepository.completeEmailLinkSignIn(
+      final result = await authRepository.verifyOtp(
         email: widget.email,
-        emailLink: link,
-      );
-
-      final firebaseUser = credential.user;
-
-      if (firebaseUser == null) {
-        throw Exception('Unable to sign in with Firebase.');
-      }
-
-      final result = await authRepository.saveVerifiedProfile(
-        fullName: widget.fullName,
+        otp: otp,
       );
 
       final user = result['user'];
 
+      final userId = user['id'].toString();
+      final fullName = user['full_name'];
+      final email = user['email'];
+
       await storage.saveUser(
-        firebaseUid: user['firebase_uid'],
-        fullName: user['full_name'],
-        email: user['email'],
+        firebaseUid: userId,
+        fullName: fullName,
+        email: email,
       );
 
       if (!mounted) return;
@@ -73,9 +62,9 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => EnrollPinScreen(
-            firebaseUid: user['firebase_uid'],
-            fullName: user['full_name'],
-            email: user['email'],
+            firebaseUid: userId,
+            fullName: fullName,
+            email: email,
           ),
         ),
       );
@@ -88,13 +77,16 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
     }
   }
 
-  Future<void> resendLink() async {
+  Future<void> resendOtp() async {
     setState(() => isResending = true);
 
     try {
-      await authRepository.sendEmailVerificationLink(email: widget.email);
+      await authRepository.requestOtp(
+        fullName: widget.fullName,
+        email: widget.email,
+      );
 
-      showMessage('Verification link sent again.');
+      showMessage('Verification code sent again.');
     } catch (e) {
       showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
@@ -112,7 +104,7 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
 
   @override
   void dispose() {
-    linkController.dispose();
+    otpController.dispose();
     super.dispose();
   }
 
@@ -120,7 +112,7 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(title: const Text('Check Your Email')),
+      appBar: AppBar(title: const Text('Verify Email')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -142,7 +134,7 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
           const SizedBox(height: 24),
 
           const Text(
-            'Verification link sent',
+            'Enter verification code',
             style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 26,
@@ -153,7 +145,7 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
           const SizedBox(height: 8),
 
           Text(
-            'We sent a Firebase verification link to ${widget.email}. Open the email, copy the full link, then paste it below.',
+            'We sent a 6-digit verification code to ${widget.email}.',
             style: const TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 14,
@@ -164,47 +156,51 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
           const SizedBox(height: 28),
 
           TextField(
-            controller: linkController,
-            maxLines: 4,
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 8,
+            ),
             decoration: const InputDecoration(
-              labelText: 'Paste verification link',
-              alignLabelWithHint: true,
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(bottom: 70),
-                child: Icon(Icons.link_rounded),
-              ),
+              labelText: '6-digit code',
+              counterText: '',
+              prefixIcon: Icon(Icons.password_rounded),
             ),
           ),
 
           const SizedBox(height: 24),
 
           FilledButton(
-            onPressed: isLoading ? null : completeVerification,
+            onPressed: isLoading ? null : verifyOtp,
             child: isLoading
                 ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text('Continue'),
+              height: 22,
+              width: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+                : const Text('Verify and Continue'),
           ),
 
           const SizedBox(height: 12),
 
           TextButton(
-            onPressed: isResending ? null : resendLink,
+            onPressed: isResending ? null : resendOtp,
             child: Text(
-              isResending ? 'Sending...' : 'Resend Verification Link',
+              isResending ? 'Sending...' : 'Resend Verification Code',
             ),
           ),
 
           const SizedBox(height: 12),
 
           const Text(
-            'For this MVP, paste-link verification is used first. App Links / Universal Links can be added later so tapping the email link opens the app automatically.',
+            'The verification code expires after 10 minutes.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppTheme.textSecondary,

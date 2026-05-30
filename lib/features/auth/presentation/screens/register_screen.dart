@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../repositories/auth_repository.dart';
-import 'check_email_screen.dart';
+import 'verify_otp_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,7 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool isLoading = false;
 
-  Future<void> sendLink() async {
+  Future<void> requestOtp() async {
     final fullName = fullNameController.text.trim();
     final email = emailController.text.trim().toLowerCase();
 
@@ -36,14 +36,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => isLoading = true);
 
     try {
-      await authRepository.sendEmailVerificationLink(email: email);
+      await authRepository.requestOtp(
+        fullName: fullName,
+        email: email,
+      );
 
       if (!mounted) return;
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => CheckEmailScreen(fullName: fullName, email: email),
+          builder: (_) => VerifyOtpScreen(
+            fullName: fullName,
+            email: email,
+          ),
         ),
       );
     } catch (e) {
@@ -88,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(height: 8),
 
           const Text(
-            'Enter your full name and email. We will send a Firebase verification link to your email.',
+            'Enter your full name and email. We will send a 6-digit verification code to your email.',
             style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 14,
@@ -121,17 +127,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(height: 28),
 
           FilledButton(
-            onPressed: isLoading ? null : sendLink,
+            onPressed: isLoading ? null : requestOtp,
             child: isLoading
                 ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text('Send Verification Link'),
+              height: 22,
+              width: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+                : const Text('Send Verification Code'),
           ),
 
           const SizedBox(height: 16),

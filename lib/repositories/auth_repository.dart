@@ -1,119 +1,67 @@
 import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-import '../core/network/api_client.dart';
-
 class AuthRepository {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  static const String baseUrl = 'https://gastomigo.rcamoguis.com/api';
 
-  Future<void> sendEmailVerificationLink({required String email}) async {
-    final actionCodeSettings = ActionCodeSettings(
-      url: 'https://seashell-antelope-329804.hostingersite.com/finishSignUp',
-      handleCodeInApp: true,
-      androidPackageName: 'com.app.gastomigo',
-      androidInstallApp: true,
-      androidMinimumVersion: '23',
-      iOSBundleId: 'com.app.gastomigo',
-    );
-
-    await _firebaseAuth.sendSignInLinkToEmail(
-      email: email,
-      actionCodeSettings: actionCodeSettings,
-    );
-  }
-
-  bool isSignInWithEmailLink(String link) {
-    return _firebaseAuth.isSignInWithEmailLink(link);
-  }
-
-  Future<UserCredential> completeEmailLinkSignIn({
-    required String email,
-    required String emailLink,
-  }) async {
-    return await _firebaseAuth.signInWithEmailLink(
-      email: email,
-      emailLink: emailLink,
-    );
-  }
-
-  Future<Map<String, dynamic>> saveVerifiedProfile({
+  Future<void> requestOtp({
     required String fullName,
+    required String email,
   }) async {
-    final user = _firebaseAuth.currentUser;
-
-    if (user == null) {
-      throw Exception('Firebase user is not signed in.');
-    }
-
-    final idToken = await user.getIdToken(true);
-
     final response = await http.post(
-      ApiClient.uri('/users/profile'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode({'full_name': fullName}),
+      Uri.parse('$baseUrl/auth/request-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'full_name': fullName,
+        'email': email,
+      }),
     );
 
-    return _handleResponse(response);
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(data['message'] ?? 'Unable to send verification code.');
+    }
   }
 
-  Future<void> completePinEnrollmentOnServer() async {
-    final user = _firebaseAuth.currentUser;
-
-    if (user == null) {
-      throw Exception('Firebase user is not signed in.');
-    }
-
-    final idToken = await user.getIdToken(true);
-
+  Future<Map<String, dynamic>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
     final response = await http.post(
-      ApiClient.uri('/users/pin-enrolled'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
+      Uri.parse('$baseUrl/auth/verify-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'otp': otp,
+      }),
     );
 
-    _handleResponse(response);
-  }
+    final data = jsonDecode(response.body);
 
-  Future<Map<String, dynamic>> getMyProfile() async {
-    final user = _firebaseAuth.currentUser;
-
-    if (user == null) {
-      throw Exception('Firebase user is not signed in.');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(data['message'] ?? 'Unable to verify code.');
     }
 
-    final idToken = await user.getIdToken(true);
+    return data;
+  }
 
-    final response = await http.get(
-      ApiClient.uri('/users/me'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
+  Future<void> completePinEnrollmentOnServer({
+    required String email,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/complete-pin-enrollment'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+      }),
     );
 
-    return _handleResponse(response);
-  }
+    final data = jsonDecode(response.body);
 
-  Map<String, dynamic> _handleResponse(http.Response response) {
-    Map<String, dynamic> data;
-
-    try {
-      data = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw Exception('Invalid server response.');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(data['message'] ?? 'Unable to complete PIN enrollment.');
     }
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return data;
-    }
-
-    throw Exception(data['message'] ?? 'Something went wrong.');
   }
 }
