@@ -29,6 +29,9 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
 
   bool isLoading = false;
 
+  bool isNewPin = true;
+  bool isConfirmPin = true;
+
   Future<void> resetPin() async {
     final pin = pinController.text.trim();
     final confirmPin = confirmPinController.text.trim();
@@ -122,12 +125,22 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
           TextField(
             controller: pinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isNewPin,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'New 6-digit PIN',
               counterText: '',
               prefixIcon: Icon(Icons.lock_outline_rounded),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isNewPin ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isNewPin = !isNewPin;
+                  });
+                },
+              ),
             ),
           ),
 
@@ -136,12 +149,22 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
           TextField(
             controller: confirmPinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isConfirmPin,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Confirm New PIN',
               counterText: '',
               prefixIcon: Icon(Icons.verified_user_outlined),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isConfirmPin ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isConfirmPin = !isConfirmPin;
+                  });
+                },
+              ),
             ),
           ),
 

@@ -31,6 +31,9 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
 
   bool isLoading = false;
 
+  bool isNewPinHidden = true;
+  bool isConfirmPin = true;
+
   Future<void> enrollPin() async {
     final pin = pinController.text.trim();
     final confirmPin = confirmPinController.text.trim();
@@ -125,12 +128,22 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
           TextField(
             controller: pinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isNewPinHidden,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: '6-digit PIN',
               counterText: '',
               prefixIcon: Icon(Icons.lock_outline_rounded),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isNewPinHidden ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isNewPinHidden = !isNewPinHidden;
+                  });
+                },
+              ),
             ),
           ),
 
@@ -139,12 +152,22 @@ class _EnrollPinScreenState extends State<EnrollPinScreen> {
           TextField(
             controller: confirmPinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isConfirmPin,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Confirm PIN',
               counterText: '',
               prefixIcon: Icon(Icons.verified_user_outlined),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isConfirmPin ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isConfirmPin = !isConfirmPin;
+                  });
+                },
+              ),
             ),
           ),
 

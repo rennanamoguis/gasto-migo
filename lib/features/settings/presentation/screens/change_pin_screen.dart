@@ -20,6 +20,10 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
 
   bool isLoading = false;
 
+  bool isConfirmNewPin = true;
+  bool isNewPin = true;
+  bool isCurrentPin = true;
+
   Future<void> changePin() async {
     final currentPin = currentPinController.text.trim();
     final newPin = newPinController.text.trim();
@@ -141,36 +145,66 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
           TextField(
             controller: currentPinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isCurrentPin,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Current PIN',
               counterText: '',
               prefixIcon: Icon(Icons.lock_outline_rounded),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isCurrentPin ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isCurrentPin = !isCurrentPin;
+                  });
+                },
+              ),
             ),
           ),
           const SizedBox(height: 14),
           TextField(
             controller: newPinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isNewPin,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'New PIN',
               counterText: '',
               prefixIcon: Icon(Icons.pin_rounded),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isNewPin ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isNewPin = !isNewPin;
+                  });
+                },
+              ),
             ),
           ),
           const SizedBox(height: 14),
           TextField(
             controller: confirmPinController,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            obscureText: isConfirmNewPin,
             maxLength: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Confirm New PIN',
               counterText: '',
               prefixIcon: Icon(Icons.verified_user_outlined),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isConfirmNewPin ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isConfirmNewPin = !isConfirmNewPin;
+                  });
+                },
+              ),
             ),
           ),
           const SizedBox(height: 28),

@@ -17,6 +17,8 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
   final pinController = TextEditingController();
   final storage = SecureStorageService();
 
+  bool _obscureText = true;
+
   String fullName = '';
 
   @override
@@ -155,7 +157,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
             TextField(
               controller: pinController,
               keyboardType: TextInputType.number,
-              obscureText: true,
+              obscureText: _obscureText,
               maxLength: 6,
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -163,9 +165,19 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                 letterSpacing: 8,
                 fontWeight: FontWeight.bold,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'PIN',
                 counterText: '',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                ),
               ),
             ),
 
