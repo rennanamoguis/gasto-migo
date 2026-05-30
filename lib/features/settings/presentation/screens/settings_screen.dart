@@ -4,7 +4,6 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/presentation/screens/get_started_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/settings_repository.dart';
 
 import 'about_screen.dart';
@@ -28,39 +27,60 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen>{
+class _SettingsScreenState extends State<SettingsScreen> {
   final settingsRepository = SettingsRepository();
+  final storage = SecureStorageService();
+
   String currencyCode = 'PHP';
   String currencySymbol = '₱';
+
+  String fullName = 'GastoMigo User';
+  String email = 'No email available';
 
   @override
   void initState() {
     super.initState();
     loadSettingsSummary();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    final storedFullName = await storage.getFullName();
+    final storedEmail = await storage.getEmail();
+
+    if (!mounted) return;
+
+    setState(() {
+      fullName = storedFullName?.isNotEmpty == true
+          ? storedFullName!
+          : 'GastoMigo User';
+
+      email = storedEmail?.isNotEmpty == true
+          ? storedEmail!
+          : 'No email available';
+    });
   }
 
   Future<void> loadSettingsSummary() async {
     final preferences = await settingsRepository.getPreferences();
+
     if (!mounted) return;
+
     setState(() {
       currencyCode = preferences.currencyCode;
       currencySymbol = preferences.currencySymbol;
     });
   }
 
-
   Future<void> resetAppLogin(BuildContext context) async {
-    final storage = SecureStorageService();
-
     await storage.clearAll();
-    await FirebaseAuth.instance.signOut();
 
     if (!context.mounted) return;
 
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const GetStartedScreen()),
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -71,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
         return AlertDialog(
           title: const Text('Reset App Login?'),
           content: const Text(
-            'This will clear your local PIN and sign out your Firebase session. Your local expenses will remain on this device.',
+            'This will clear your local account session and PIN. Your local expenses will remain on this device.',
           ),
           actions: [
             TextButton(
@@ -79,7 +99,9 @@ class _SettingsScreenState extends State<SettingsScreen>{
               child: const Text('Cancel'),
             ),
             FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: AppTheme.error),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppTheme.error,
+              ),
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Reset'),
             ),
@@ -93,15 +115,106 @@ class _SettingsScreenState extends State<SettingsScreen>{
     }
   }
 
+  String get initials {
+    final parts = fullName.trim().split(RegExp(r'\s+'));
+
+    if (parts.isEmpty || fullName == 'GastoMigo User') {
+      return 'G';
+    }
+
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+
+    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+        .toUpperCase();
+  }
+
+  Widget _buildUserInfoCard() {
+    return AppCard(
+      padding: const EdgeInsets.all(18),
+      child: Row(
+        children: [
+          Container(
+            height: 58,
+            width: 58,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryContainer,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              initials,
+              style: const TextStyle(
+                color: AppTheme.primary,
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fullName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  email,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          const Icon(
+            Icons.verified_user_rounded,
+            color: AppTheme.primary,
+            size: 24,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
         children: [
-          _SectionLabel('Manage'),
-          SizedBox(height: 8),
+          _buildUserInfoCard(),
+
+          const SizedBox(height: 22),
+
+          const _SectionLabel('Manage'),
+
+          const SizedBox(height: 8),
+
           AppCard(
             padding: EdgeInsets.zero,
             child: Column(
@@ -112,46 +225,60 @@ class _SettingsScreenState extends State<SettingsScreen>{
                   onTap: () async {
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const CategoriesScreen(),
+                      ),
                     );
 
                     widget.onSettingsChanged?.call();
                   },
                 ),
-                Divider(),
+
+                const Divider(height: 1),
+
                 _SettingsTile(
                   icon: Icons.payment_rounded,
                   title: 'Payment Methods',
                   onTap: () async {
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const PaymentMethodsScreen(),
+                      ),
                     );
 
                     widget.onSettingsChanged?.call();
                   },
                 ),
-                Divider(),
+
+                const Divider(height: 1),
+
                 _SettingsTile(
                   icon: Icons.account_balance_wallet_rounded,
                   title: 'Accounts',
                   onTap: () async {
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AccountsScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const AccountsScreen(),
+                      ),
                     );
 
                     widget.onSettingsChanged?.call();
                   },
                 ),
-                Divider(),
+
+                const Divider(height: 1),
+
                 _SettingsTile(
                   icon: Icons.storefront_rounded,
                   title: 'Merchants',
                   onTap: () async {
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const MerchantsScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const MerchantsScreen(),
+                      ),
                     );
 
                     widget.onSettingsChanged?.call();
@@ -161,10 +288,12 @@ class _SettingsScreenState extends State<SettingsScreen>{
             ),
           ),
 
-          SizedBox(height: 22),
+          const SizedBox(height: 22),
 
-          _SectionLabel('Preferences'),
-          SizedBox(height: 8),
+          const _SectionLabel('Preferences'),
+
+          const SizedBox(height: 8),
+
           AppCard(
             padding: EdgeInsets.zero,
             child: Column(
@@ -176,24 +305,29 @@ class _SettingsScreenState extends State<SettingsScreen>{
                   onTap: () async {
                     final result = await Navigator.push<bool>(
                       context,
-                      MaterialPageRoute(builder: (_) => const CurrencyScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const CurrencyScreen(),
+                      ),
                     );
 
                     if (result == true) {
                       await loadSettingsSummary();
-
                       widget.onSettingsChanged?.call();
                     }
                   },
                 ),
-                Divider(),
-                _SettingsTile(
+
+                const Divider(height: 1),
+
+                const _SettingsTile(
                   icon: Icons.calendar_today_rounded,
                   title: 'Date Format',
                   trailingText: 'May 20, 2025',
                 ),
-                Divider(),
-                _SettingsTile(
+
+                const Divider(height: 1),
+
+                const _SettingsTile(
                   icon: Icons.access_time_rounded,
                   title: 'Time Format',
                   trailingText: '12-hour',
@@ -202,10 +336,12 @@ class _SettingsScreenState extends State<SettingsScreen>{
             ),
           ),
 
-          SizedBox(height: 22),
+          const SizedBox(height: 22),
 
-          _SectionLabel('About'),
-          SizedBox(height: 8),
+          const _SectionLabel('About'),
+
+          const SizedBox(height: 8),
+
           AppCard(
             padding: EdgeInsets.zero,
             child: Column(
@@ -217,33 +353,45 @@ class _SettingsScreenState extends State<SettingsScreen>{
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AboutScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const AboutScreen(),
+                      ),
                     );
                   },
                 ),
-                Divider(),
+
+                const Divider(height: 1),
+
                 _SettingsTile(
                   icon: Icons.backup_rounded,
                   title: 'Backup & Restore',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const BackupRestoreScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const BackupRestoreScreen(),
+                      ),
                     );
                   },
                 ),
-                Divider(),
+
+                const Divider(height: 1),
+
                 _SettingsTile(
                   icon: Icons.lock_reset_rounded,
                   title: 'Change PIN',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ChangePinScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const ChangePinScreen(),
+                      ),
                     );
                   },
                 ),
-                Divider(),
+
+                const Divider(height: 1),
+
                 _SettingsTile(
                   icon: Icons.restart_alt_rounded,
                   title: 'Reset App Login',
@@ -294,7 +442,11 @@ class _SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: AppTheme.primary),
+      minVerticalPadding: 14,
+      leading: Icon(
+        icon,
+        color: AppTheme.primary,
+      ),
       title: Text(
         title,
         style: const TextStyle(
@@ -305,15 +457,17 @@ class _SettingsTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (trailingText != null)
+          if (trailingText != null) ...[
             Text(
               trailingText!,
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          const SizedBox(width: 4),
+            const SizedBox(width: 4),
+          ],
           const Icon(
             Icons.chevron_right_rounded,
             color: AppTheme.textSecondary,

@@ -4,6 +4,7 @@ import '../../../../app/app_shell.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/pin_utils.dart';
+import 'forgot_pin_otp_screen.dart';
 
 class PinLoginScreen extends StatefulWidget {
   const PinLoginScreen({super.key});
@@ -32,6 +33,28 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
     setState(() {
       fullName = name ?? '';
     });
+  }
+
+  Future<void> forgotPin() async {
+    final email = await storage.getEmail();
+
+    if (!mounted) return;
+
+    if (email == null || email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No registered email found. Please register again.'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ForgotPinOtpScreen(email: email),
+      ),
+    );
   }
 
   Future<void> login() async {
@@ -152,6 +175,13 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
               onPressed: login,
               child: const Text('Unlock'),
             ),
+
+            const SizedBox(height: 24),
+
+            TextButton(
+              onPressed: forgotPin,
+              child: const Text('Forgot PIN?'),
+            )
           ],
         ),
       ),

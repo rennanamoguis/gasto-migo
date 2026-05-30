@@ -1,0 +1,179 @@
+import 'package:flutter/material.dart';
+
+import '../../../../app/app_shell.dart';
+import '../../../../core/storage/secure_storage_service.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/pin_utils.dart';
+
+class ResetPinScreen extends StatefulWidget {
+  final String userId;
+  final String fullName;
+  final String email;
+
+  const ResetPinScreen({
+    super.key,
+    required this.userId,
+    required this.fullName,
+    required this.email,
+  });
+
+  @override
+  State<ResetPinScreen> createState() => _ResetPinScreenState();
+}
+
+class _ResetPinScreenState extends State<ResetPinScreen> {
+  final pinController = TextEditingController();
+  final confirmPinController = TextEditingController();
+
+  final storage = SecureStorageService();
+
+  bool isLoading = false;
+
+  Future<void> resetPin() async {
+    final pin = pinController.text.trim();
+    final confirmPin = confirmPinController.text.trim();
+
+    if (!PinUtils.isValidPin(pin)) {
+      showMessage('PIN must be exactly 6 digits.');
+      return;
+    }
+
+    if (pin != confirmPin) {
+      showMessage('PIN does not match.');
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final salt = PinUtils.generateSalt();
+      final hash = PinUtils.hashPin(pin: pin, salt: salt);
+
+      await storage.saveUser(
+        firebaseUid: widget.userId,
+        fullName: widget.fullName,
+        email: widget.email,
+      );
+
+      await storage.savePin(
+        pinHash: hash,
+        pinSalt: salt,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const AppShell()),
+            (route) => false,
+      );
+    } catch (e) {
+      showMessage(e.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void dispose() {
+    pinController.dispose();
+    confirmPinController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      appBar: AppBar(title: const Text('Create New PIN')),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const Text(
+            'Create your new PIN',
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'Use this new PIN to unlock GastoMigo.',
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 28),
+
+          TextField(
+            controller: pinController,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 6,
+            decoration: const InputDecoration(
+              labelText: 'New 6-digit PIN',
+              counterText: '',
+              prefixIcon: Icon(Icons.lock_outline_rounded),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          TextField(
+            controller: confirmPinController,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 6,
+            decoration: const InputDecoration(
+              labelText: 'Confirm New PIN',
+              counterText: '',
+              prefixIcon: Icon(Icons.verified_user_outlined),
+            ),
+          ),
+
+          const SizedBox(height: 28),
+
+          FilledButton(
+            onPressed: isLoading ? null : resetPin,
+            child: isLoading
+                ? const SizedBox(
+              height: 22,
+              width: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+                : const Text('Save New PIN'),
+          ),
+
+          const SizedBox(height: 16),
+
+          const Text(
+            'Your raw PIN will not be saved. Only a secure PIN hash and salt are stored locally.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
