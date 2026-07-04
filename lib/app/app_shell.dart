@@ -126,7 +126,7 @@ class BubbleBottomNav extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: .10),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),

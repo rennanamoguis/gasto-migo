@@ -1,4 +1,4 @@
-package com.app.gastomigo.gastomigo
+package com.rcamoguis.gastomigo
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -7,56 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:332340934159:android:324e84cd921ad4da00d57a",
+        "mobilesdk_app_id": "1:332340934159:android:fd0d52c32cfca9f800d57a",
         "android_client_info": {
-          "package_name": "com.app.gastomigo.gastomigo"
+          "package_name": "com.rcamoguis.gastomigo"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCGyG1RBO5H-5jLdU6znqdN5MR0o6moqXs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "332340934159-kfiahudmg5b7ruj9319k32vukb8vmi06.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.app.gastomigo.gastomigo"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:332340934159:android:0a80f83721f2f17700d57a",
-        "android_client_info": {
-          "package_name": "com.application.gastomigo"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "332340934159-823uvl540ti3018tj00e0orpjsvi3hnj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.application.gastomigo",
-            "certificate_hash": "beba14fcacb802ef49bccb3febeb19a1db7fec0e"
-          }
-        },
         {
           "client_id": "332340934159-f1bnugavblvublebdma432fbbudbtmft.apps.googleusercontent.com",
           "client_type": 3

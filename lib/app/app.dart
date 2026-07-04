@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gastomigo/app/app_shell.dart';
 import 'package:gastomigo/features/auth/presentation/screens/splash_screen.dart';
 
 import '../core/constants/app_constants.dart';

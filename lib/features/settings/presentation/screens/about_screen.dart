@@ -14,14 +14,24 @@ class AboutScreen extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: const [
+        children: [
           AppCard(
             child: Column(
               children: [
-                Icon(
-                  Icons.account_balance_wallet_rounded,
-                  color: AppTheme.primary,
-                  size: 64,
+                // Icon(
+                //   Icons.account_balance_wallet_rounded,
+                //   color: AppTheme.primary,
+                //   size: 64,
+                // ),
+                Center(
+                  child: SizedBox(
+                    height: 110,
+                    width: 110,
+                    child: Image.asset(
+                      'assets/images/gastomigo_logo.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
                 SizedBox(height: 16),
                 Text(
@@ -53,7 +63,7 @@ class AboutScreen extends StatelessWidget {
           SizedBox(height: 16),
           AppCard(
             child: Text(
-              'GastoMigo is a local-first mobile app for recording daily expenses with itemized transactions. It supports offline PIN login after account setup and stores expenses locally using SQLite.',
+              'GastoMigo is a local-first mobile app for recording daily expenses with itemized transactions. It supports offline PIN login after account setup and stores expenses locally on your device.',
               style: TextStyle(
                 color: AppTheme.textSecondary,
                 height: 1.5,

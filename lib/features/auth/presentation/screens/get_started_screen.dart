@@ -25,16 +25,19 @@ class GetStartedScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.primary.withOpacity(0.18),
+                      color: AppTheme.primary.withValues(alpha: 0.18),
                       blurRadius: 24,
                       offset: const Offset(0, 12),
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.account_balance_wallet_rounded,
-                  color: Colors.white,
-                  size: 52,
+                child: SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: Image.asset(
+                    'assets/images/gasto_migo_logo.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
 

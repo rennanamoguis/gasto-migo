@@ -368,7 +368,7 @@ class _TransactionListItem extends StatelessWidget {
               height: 38,
               width: 38,
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.10),
+                color: AppTheme.primary.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(

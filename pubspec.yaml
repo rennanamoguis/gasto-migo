@@ -1,5 +1,5 @@
 name: gastomigo
-description: "A new Flutter project."
+description: "Budget Expenses Tracker App"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -106,7 +106,7 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo_gasto_migo.png"
+  image_path: "assets/images/gasto_migo_logo.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/logo_gasto_migo.png"
+  adaptive_icon_foreground: "assets/images/gasto_migo_logo.png"
